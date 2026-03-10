@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crowd-Verified Local Problem Mapper</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🗺️</text></svg>" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <nav>
+        <a href="/" class="logo">CrowdMapper</a>
+        <div class="nav-links">
+            <a href="/" th:text="#{nav.home}">Home</a>
+            <a href="/report" th:text="#{nav.report}">Report Problem</a>
+            <a href="/verify" th:text="#{nav.verify}">Verify</a>
+            <a href="/dashboard" th:text="#{nav.dashboard}">Dashboard</a>
+            <a href="/admin" th:text="#{nav.admin}">Admin</a>
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
+            <a href="/login" style="background: linear-gradient(135deg, var(--primary-color), #8b5cf6); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none;">🔐 Login</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1 th:text="#{home.title}">Crowd-Verified Local Problem Mapper</h1>
+            <p th:text="#{home.subtitle}">Empowering citizens to report, verify, and resolve civic issues together.</p>
+            <br>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="/report" class="btn btn-primary" style="background: white; color: var(--primary-color);" th:text="#{home.reportBtn}">Report Problem</a>
+                <a href="/dashboard" class="btn" style="background: transparent; border: 2px solid white; color: white;" th:text="#{home.dashboardBtn}">View Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Quick Links Section -->
+        <section class="quick-links-section">
+            <h2 style="text-align: center; margin-bottom: 2rem;" th:text="#{home.quicklinks}">Quick Links</h2>
+            <div class="quick-links-grid">
+                <a href="/" class="quick-link-card">
+                    <div class="quick-link-icon">🏠</div>
+                    <h3 th:text="#{nav.home}">Home</h3>
+                    <p th:text="#{quick.home}">Back to main platform overview</p>
+                </a>
+                <a href="/report" class="quick-link-card">
+                    <div class="quick-link-icon">📝</div>
+                    <h3 th:text="#{nav.report}">Report Problem</h3>
+                    <p th:text="#{quick.report}">Submit a new civic issue</p>
+                </a>
+                <a href="/verify" class="quick-link-card">
+                    <div class="quick-link-icon">✓</div>
+                    <h3 th:text="#{nav.verify}">Verify Problems</h3>
+                    <p th:text="#{quick.verify}">Vote on community reports</p>
+                </a>
+                <a href="/dashboard" class="quick-link-card">
+                    <div class="quick-link-icon">📊</div>
+                    <h3 th:text="#{nav.dashboard}">Dashboard</h3>
+                    <p th:text="#{quick.dashboard}">View analytics & insights</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- 1. How It Works Section -->
+        <h2 style="text-align: center; margin-bottom: 2rem;" th:text="#{home.howitworks}">How It Works</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <span class="step-icon">📢</span>
+                <h3 th:text="#{step.report}">1. Report</h3>
+                <p th:text="#{step.report.desc}">Citizens report local issues with details, severity, and location.</p>
+            </div>
+            <div class="step-card">
+                <span class="step-icon">👥</span>
+                <h3 th:text="#{step.verify}">2. Verify</h3>
+                <p th:text="#{step.verify.desc}">Community votes (Confirm/Reject) to validate the problem's existence.</p>
+            </div>
+            <div class="step-card">
+                <span class="step-icon">🔥</span>
+                <h3 th:text="#{step.prioritize}">3. Prioritize</h3>
+                <p th:text="#{step.prioritize.desc}">System calculates urgency based on crowd input and severity levels.</p>
+            </div>
+            <div class="step-card">
+                <span class="step-icon">✅</span>
+                <h3 th:text="#{step.resolve}">4. Resolve</h3>
+                <p th:text="#{step.resolve.desc}">Authorities prioritize high-priority verified issues for quick action.</p>
+            </div>
+        </div>
+
+        <!-- 2. Live Statistics Section -->
+        <h2 style="text-align: center; margin-top: 4rem; margin-bottom: 2rem;" th:text="#{home.statistics}">Live Statistics</h2>
+        <section class="live-stats">
+            <div class="stat-item">
+                <h3 th:text="${totalProblems}">0</h3>
+                <p th:text="#{stats.problems}">Problems Reported</p>
+            </div>
+            <div class="stat-item">
+                <h3 style="color: var(--danger-color);" th:text="${highPriorityCount}">0</h3>
+                <p th:text="#{stats.high}">High Priority Issues</p>
+            </div>
+            <div class="stat-item">
+                <h3>15+</h3>
+                <p th:text="#{stats.cities}">Cities Covered</p>
+            </div>
+            <div class="stat-item">
+                <h3 style="color: var(--success-color);" th:text="${totalVerifications}">0</h3>
+                <p th:text="#{stats.verifications}">Total Verifications</p>
+            </div>
+        </section>
+
+        <!-- 3. Problem Categories Section -->
+        <h2 style="text-align: center; margin-top: 4rem; margin-bottom: 2rem;" th:text="#{home.categories}">Problem Categories</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <span style="font-size: 2rem;">🚧</span>
+                <h4>Potholes</h4>
+                <p>Road damage and unsafe surfaces.</p>
+            </div>
+            <div class="step-card">
+                <span style="font-size: 2rem;">🗑️</span>
+                <h4>Garbage</h4>
+                <p>Overflowing bins and illegal dumping.</p>
+            </div>
+            <div class="step-card">
+                <span style="font-size: 2rem;">💧</span>
+                <h4>Water Leakage</h4>
+                <p>Pipe bursts and water wastage.</p>
+            </div>
+            <div class="step-card">
+                <span style="font-size: 2rem;">💡</span>
+                <h4>Streetlights</h4>
+                <p>Non-functional lights in public areas.</p>
+            </div>
+            <div class="step-card">
+                <span style="font-size: 2rem;">🚦</span>
+                <h4>Traffic/Safety</h4>
+                <p>Hazardous traffic zones or security concerns.</p>
+            </div>
+            <div class="step-card">
+                <span style="font-size: 2rem;">🦟</span>
+                <h4>Drainage</h4>
+                <p>Blocked drains and health hazards.</p>
+            </div>
+        </div>
+
+        <!-- 4. Top Priority Problems Section (Enhanced - Live Preview) -->
+        <section class="urgent-problems-section">
+            <div style="margin-bottom: 1rem;">
+                <h2 style="margin-top: 0;">🔥 Urgent Problems – Live Preview</h2>
+                <p style="color: var(--secondary-color); font-size: 0.95rem;">Real-time display of the most critical civic issues verified by our community. Each problem's urgency is determined by community votes and severity level.</p>
+            </div>
+
+            <div class="card-grid">
+                <div class="card urgent-card" th:each="p : ${problems}" th:if="${p.status != 'Resolved'}" th:limit="5">
+                    <div class="problem-header">
+                        <span class="priority-badge"
+                            th:text="${p.priority > 8 ? 'High Priority' : (p.priority > 3 ? 'Medium Priority' : 'Low Priority')}"
+                            th:classappend="${p.priority > 8 ? 'priority-high' : (p.priority > 3 ? 'priority-medium' : 'priority-low')}">
+                        </span>
+                        <span class="status-badge" th:text="${p.status}"
+                            th:classappend="${p.status == 'Open' ? 'status-open' : 'status-resolved'}">Status</span>
+                    </div>
+                    <h3 class="problem-title" th:text="${p.title}">Problem Title</h3>
+                    <div class="problem-meta">
+                        <span th:text="${p.type}">Type</span> |
+                        <span th:text="${p.city} + ', ' + ${p.area}">Location</span>
+                    </div>
+                    <p class="problem-desc" th:text="${p.description}"
+                        style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.9rem;">
+                    </p>
+                    <div class="verification-stats">
+                        <span class="confirm-stat">👍 <span th:text="${p.confirms}">0</span></span>
+                        <span class="reject-stat">👎 <span th:text="${p.rejects}">0</span></span>
+                        <span class="priority-score">⭐ Score: <span th:text="${p.priority}">0</span></span>
+                    </div>
+                    <a href="/verify" class="btn btn-primary" style="width: 100%; text-align: center; margin-top: 1rem; cursor: pointer;">View & Verify</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Problem Life Cycle Visualization -->
+        <section class="lifecycle-section" style="margin-top: 5rem;">
+            <h2 style="text-align: center; margin-bottom: 3rem;">📊 Problem Life Cycle – Government-Style Workflow</h2>
+            <div class="lifecycle-flow">
+                <div class="lifecycle-step">
+                    <div class="step-circle">1</div>
+                    <h4>Reported</h4>
+                    <p>Citizen submits a civic issue with location, type, and severity</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="lifecycle-step">
+                    <div class="step-circle">2</div>
+                    <h4>Verified</h4>
+                    <p>Community votes to validate the problem exists</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="lifecycle-step">
+                    <div class="step-circle">3</div>
+                    <h4>Prioritized</h4>
+                    <p>System calculates urgency: (Confirms − Rejects) + Severity</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="lifecycle-step">
+                    <div class="step-circle">4</div>
+                    <h4>In Progress</h4>
+                    <p>Admin/Authority assigns resources and begins resolution</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="lifecycle-step">
+                    <div class="step-circle">5</div>
+                    <h4>Resolved</h4>
+                    <p>Issue completed; community feedback acknowledged</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Community Impact Section -->
+        <section class="impact-section" style="margin-top: 5rem; background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(46, 204, 113, 0.1)); padding: 3rem 2rem; border-radius: var(--radius);">
+            <h2 style="text-align: center; margin-bottom: 2rem;">🌍 Real-World Impact</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;">
+                <div class="impact-card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🚫</div>
+                    <h4>Eliminates Ignored Complaints</h4>
+                    <p>No more forgotten civic issues; crowd verification ensures problems are seen and acted upon.</p>
+                </div>
+                <div class="impact-card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">⚡</div>
+                    <h4>Faster Issue Identification</h4>
+                    <p>Multiple reports & verifications quickly highlight the most critical issues that need immediate attention.</p>
+                </div>
+                <div class="impact-card">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">👥</div>
+                    <h4>Community-Driven Governance</h4>
+                    <p>Puts citizens in charge; authorities respond to real community needs, building trust and transparency.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Who Can Use This Platform? -->
+        <section class="roles-section" style="margin-top: 5rem;">
+            <h2 style="text-align: center; margin-bottom: 3rem;">👥 Who Can Use This Platform?</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <div class="role-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🏘️</div>
+                    <h3>Citizens</h3>
+                    <p style="color: var(--secondary-color); margin-bottom: 1rem;"><strong>Core Users</strong></p>
+                    <ul style="text-align: left; line-height: 1.8; font-size: 0.9rem;">
+                        <li>✔ Report local problems with photos & location</li>
+                        <li>✔ Verify and vote on other problems (Confirm/Reject)</li>
+                        <li>✔ View real-time dashboard & statistics</li>
+                        <li>✔ Track status of reported issues</li>
+                    </ul>
+                </div>
+                <div class="role-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🔍</div>
+                    <h3>Community Members</h3>
+                    <p style="color: var(--secondary-color); margin-bottom: 1rem;"><strong>Validators</strong></p>
+                    <ul style="text-align: left; line-height: 1.8; font-size: 0.9rem;">
+                        <li>✔ Review and verify reported issues</li>
+                        <li>✔ Confirm problems through voting (Confirm/Reject)</li>
+                        <li>✔ Contribute to prioritization accuracy</li>
+                        <li>✔ Build community credibility through active participation</li>
+                    </ul>
+                </div>
+                <div class="role-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🛠️</div>
+                    <h3>Authorities/Admin</h3>
+                    <p style="color: var(--secondary-color); margin-bottom: 1rem;"><strong>Decision Makers</strong></p>
+                    <ul style="text-align: left; line-height: 1.8; font-size: 0.9rem;">
+                        <li>✔ Monitor all reported and verified issues</li>
+                        <li>✔ View priority rankings and metrics</li>
+                        <li>✔ Update issue status (Open → In Progress → Resolved)</li>
+                        <li>✔ Allocate resources based on community input</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Priority Calculation Explanation -->
+        <section class="priority-calc-section" style="margin-top: 5rem; background: var(--card-bg); padding: 2.5rem; border-radius: var(--radius); border-left: 4px solid var(--primary-color); box-shadow: var(--shadow);">
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">🧮 How Priority is Calculated</h3>
+            <div style="font-size: 1rem; line-height: 1.8;">
+                <p style="margin-bottom: 1rem;"><strong>Priority Score Formula:</strong></p>
+                <div style="background: linear-gradient(90deg, rgba(74, 144, 226, 0.1), transparent); padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; font-family: monospace; font-weight: bold;">
+                    Priority Score = (Confirmations − Rejections) + Severity Score
+                </div>
+                <p style="margin-bottom: 1rem;"><strong>Where:</strong></p>
+                <ul style="margin-left: 1rem; line-height: 2;">
+                    <li><strong>Confirmations:</strong> Number of citizens who verified the problem exists</li>
+                    <li><strong>Rejections:</strong> Number who voted the problem doesn't exist</li>
+                    <li><strong>Severity Score:</strong> High=+10, Medium=+5, Low=0</li>
+                </ul>
+                <p style="margin-top: 1.5rem; color: var(--success-color); font-weight: bold;">✓ This ensures urgent AND verified problems get maximum attention.</p>
+            </div>
+        </section>
+
+        <!-- 9. Transparency & Trust Section -->
+        <section class="transparency-section" style="margin-top: 5rem; background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 211, 153, 0.1)); padding: 3rem 2rem; border-radius: var(--radius);">
+            <h2 style="text-align: center; margin-bottom: 2rem;">🔒 Transparency & Trust – How We Prevent Misuse</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem;">
+                <div class="trust-card">
+                    <h4>👥 Crowd Verification</h4>
+                    <p>Problems must be verified by multiple citizens. Fake reports won't gain votes and stay deprioritized.</p>
+                </div>
+                <div class="trust-card">
+                    <h4>🛡️ Admin Moderation</h4>
+                    <p>Administrators review high-priority issues before action. Manual oversight prevents spam/abuse.</p>
+                </div>
+                <div class="trust-card">
+                    <h4>📊 Public Visibility</h4>
+                    <p>All verification counts are visible. Citizens see exactly how many people confirmed each issue.</p>
+                </div>
+                <div class="trust-card">
+                    <h4>🔍 Transparent Status Updates</h4>
+                    <p>Issues progress through clear statuses: Reported → Verified → In Progress → Resolved.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. Future Enhancements Section -->
+        <section class="future-section" style="margin-top: 5rem; background: var(--card-bg); padding: 3rem 2rem; border-radius: var(--radius); box-shadow: var(--shadow);">
+            <h2 style="text-align: center; margin-bottom: 2rem;">🚀 Planned Enhancements (Scalability & Growth)</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+                <div class="future-card">
+                    <span style="font-size: 2rem;">📍</span>
+                    <h4>GPS-Based Auto-Location</h4>
+                    <p>Auto-capture exact coordinates when reporting issues for precise mapping.</p>
+                </div>
+                <div class="future-card">
+                    <span style="font-size: 2rem;">📷</span>
+                    <h4>Photo Upload Support</h4>
+                    <p>Attach images of problems for better verification and evidence documentation.</p>
+                </div>
+                <div class="future-card">
+                    <span style="font-size: 2rem;">📱</span>
+                    <h4>Mobile App (iOS/Android)</h4>
+                    <p>Native apps for seamless on-the-go reporting and verification from smartphones.</p>
+                </div>
+                <div class="future-card">
+                    <span style="font-size: 2rem;">🏛️</span>
+                    <h4>Government Integration</h4>
+                    <p>Direct API connectivity with municipal systems for automated issue assignment.</p>
+                </div>
+                <div class="future-card">
+                    <span style="font-size: 2rem;">🌐</span>
+                    <h4>Multi-Language Support</h4>
+                    <p>Regional language options (Hindi, Marathi, Tamil, etc.) for wider accessibility.</p>
+                </div>
+                <div class="future-card">
+                    <span style="font-size: 2rem;">📈</span>
+                    <h4>Advanced Analytics</h4>
+                    <p>Predictive insights, trend analysis, and heat maps for better resource planning.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11. Accessibility & Inclusion -->
+        <section class="accessibility-section" style="margin-top: 5rem; background: linear-gradient(135deg, rgba(187, 134, 252, 0.1), rgba(207, 102, 121, 0.1)); padding: 2.5rem 2rem; border-radius: var(--radius);">
+            <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-color);">♿ Accessibility & Social Inclusion</h3>
+            <div style="text-align: center; line-height: 1.8; font-size: 0.95rem;">
+                <p>✔ <strong>Simple UI:</strong> Easy-to-use interface for all age groups and technical skill levels</p>
+                <p>✔ <strong>High Contrast Mode:</strong> Dark/Light theme toggle for vision-friendly experience</p>
+                <p>✔ <strong>Future Regional Language Support:</strong> Plans to support multiple regional languages for underrepresented communities</p>
+                <p style="margin-top: 1rem; color: var(--success-color); font-weight: bold;">Our goal: Make civic participation accessible to EVERYONE.</p>
+            </div>
+        </section>
+
+        <!-- 12. Testimonials / Use Case Examples -->
+        <section class="testimonials-section" style="margin-top: 5rem;">
+            <h2 style="text-align: center; margin-bottom: 3rem;">📖 Real-World Use Cases</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <div class="testimonial-card">
+                    <div style="padding: 2rem; background: linear-gradient(135deg, var(--primary-color), rgba(74, 144, 226, 0.5)); border-radius: 8px; color: white;">
+                        <p style="font-style: italic; margin-bottom: 1rem;">"Road pothole on Sector 5 verified by 12 citizens within 3 hours. Authorities prioritized it and fixed within a week."</p>
+                        <p style="font-weight: bold;">— Pune Municipal Corporation, Sector 5</p>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div style="padding: 2rem; background: linear-gradient(135deg, var(--success-color), rgba(46, 204, 113, 0.5)); border-radius: 8px; color: white;">
+                        <p style="font-style: italic; margin-bottom: 1rem;">"Garbage dumping site reported and verified by community. High priority score led to immediate cleanup and enforcement action."</p>
+                        <p style="font-weight: bold;">— Civic Engagement Program, Mumbai</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div
+            style="text-align: center; margin-top: 5rem; background: var(--card-bg); padding: 4rem 2rem; border-radius: var(--radius); box-shadow: var(--shadow);">
+            <h2>Why This Platform?</h2>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem; text-align: left;">
+                <div>
+                    <h4>Community Driven</h4>
+                    <p>Uses <strong>Crowd Verification</strong> to filter out fake reports and highlight genuine issues
+                        verified by local citizens.</p>
+                </div>
+                <div>
+                    <h4>Data-Driven Priorities</h4>
+                    <p>Advanced prioritization logic ensures that limited government resources are focused on what truly
+                        matters to the community.</p>
+                </div>
+                <div>
+                    <h4>Transparency</h4>
+                    <p>Residents can see real-time updates on reported issues and how the community is responding to
+                        them.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Call to Action Section -->
+        <div
+            style="text-align: center; margin-top: 4rem; padding: 3rem; background: linear-gradient(135deg, var(--primary-color), var(--success-color)); border-radius: var(--radius); color: white;">
+            <h3>Ready to Make a Difference?</h3>
+            <p style="margin: 1rem 0;">Citizen involvement is essential for a better community. Start contributing
+                today.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                <a href="/report" class="btn" style="background: white; color: var(--primary-color);">Report a
+                    Problem</a>
+                <a href="/verify" class="btn"
+                    style="background: transparent; border: 2px solid white; color: white;">Help Verify Issues</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 7. Footer Section -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h4 style="color: var(--primary-color); margin-bottom: 0.8rem; font-size: 1.3rem;">🎯 CrowdMapper</h4>
+                <p style="margin-bottom: 0.5rem; font-weight: 500;">Final Year Degree Project</p>
+                <p style="margin-bottom: 0.3rem; opacity: 0.9;">📚 Department of Computer Science</p>
+                <p style="opacity: 0.9;">🏛️ College of Engineering & Technology</p>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--primary-color);">🔗 Quick Navigation</h4>
+                <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+                    <a href="/" style="padding: 0.4rem 0; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <span>🏠</span> Home
+                    </a>
+                    <a href="/report" style="padding: 0.4rem 0; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <span>📝</span> Report Problem
+                    </a>
+                    <a href="/verify" style="padding: 0.4rem 0; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <span>✅</span> Verify Problems
+                    </a>
+                    <a href="/dashboard" style="padding: 0.4rem 0; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <span>📊</span> Dashboard
+                    </a>
+                    <a href="/admin" style="padding: 0.4rem 0; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <span>🛠️</span> Admin Panel
+                    </a>
+                </div>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--primary-color);">💻 Tech Stack</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <span style="background: linear-gradient(135deg, var(--primary-color), rgba(187, 134, 252, 0.5)); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: white;">☕ Java 17+</span>
+                    <span style="background: linear-gradient(135deg, var(--success-color), rgba(46, 204, 113, 0.5)); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: white;">🚀 Spring Boot 3.2</span>
+                    <span style="background: linear-gradient(135deg, var(--accent-color), rgba(255, 107, 107, 0.5)); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: white;">🎨 Thymeleaf</span>
+                    <span style="background: linear-gradient(135deg, #ff9800, rgba(255, 152, 0, 0.5)); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: white;">🗄️ H2/MySQL</span>
+                    <span style="background: linear-gradient(135deg, #2196F3, rgba(33, 150, 243, 0.5)); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: white;">🌐 HTML5/CSS3</span>
+                    <span style="background: linear-gradient(135deg, #FFC107, rgba(255, 193, 7, 0.5)); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: #333;">📜 JavaScript</span>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--primary-color); font-size: 0.9rem; text-align: center;">
+            <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--primary-color);">&copy; 2025-2026 Crowd-Verified Local Problem Mapper</p>
+            <p style="margin-bottom: 0.3rem; font-weight: 500;">🎓 Final Year Degree Project | Computer Science & Engineering</p>
+            <p style="margin-bottom: 0.5rem; font-size: 0.85rem; opacity: 0.9;">📍 College of Engineering & Technology | 📅 Academic Year 2025-26</p>
+            <p style="margin-bottom: 0.3rem; color: var(--primary-color); font-weight: 600;">👥 Project Team: Crowd Solutions Initiative</p>
+            <p style="font-size: 0.85rem; opacity: 0.8;">📧 admin@crowdmapper.local | 🌍 Empowering Citizens through Civic Technology</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/js/script.js}"></script>
+</body>
+
+</html>

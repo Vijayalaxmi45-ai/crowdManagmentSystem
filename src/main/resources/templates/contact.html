@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Contact - Crowd Mapper</title>    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🗺️</text></svg>" type="image/svg+xml">    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <nav>
+        <a href="/" class="logo">CrowdMapper</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/report">Report Problem</a>
+            <a href="/verify">Verify</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/admin">Admin</a>
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Contact Us</h1>
+        <p>Email us at support@crowdmapper.com for feedback.</p>
+    </div>
+    <script th:src="@{/js/script.js}"></script>
+</body>
+
+</html>

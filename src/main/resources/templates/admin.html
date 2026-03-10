@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Crowd Mapper</title>    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🗺️</text></svg>" type="image/svg+xml">    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .action-form {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="/" class="logo">CrowdMapper</a>
+        <div class="nav-links">
+            <a href="/" th:text="#{nav.home}">Home</a>
+            <a href="/report" th:text="#{nav.report}">Report Problem</a>
+            <a href="/verify" th:text="#{nav.verify}">Verify</a>
+            <a href="/dashboard" th:text="#{nav.dashboard}">Dashboard</a>
+            <a href="/admin" th:text="#{nav.admin}">Admin</a>
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
+            <a href="/login" style="background: linear-gradient(135deg, var(--primary-color), #8b5cf6); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none;">🔐 Login</a>
+        </div>
+    </nav>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 1200px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2>Admin Management Panel</h2>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <span
+                    style="background: var(--card-bg); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; box-shadow: var(--shadow);">
+                    Logged in as: <strong>Admin</strong>
+                </span>
+                <a href="/login?logout" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
+
+        <!-- Admin Summary -->
+        <div class="stats-grid" style="margin-bottom: 2rem;">
+            <div class="stat-card" style="padding: 1.5rem;">
+                <div class="stat-number" style="font-size: 2rem;" th:text="${totalProblems}">0</div>
+                <div class="stat-label">Total Reports</div>
+            </div>
+            <div class="stat-card" style="padding: 1.5rem;">
+                <div class="stat-number" style="font-size: 2rem; color: var(--danger-color);"
+                    th:text="${highPriorityCount}">0</div>
+                <div class="stat-label">High Priority Issues</div>
+            </div>
+            <div class="stat-card" style="padding: 1.5rem;">
+                <div class="stat-number" style="font-size: 2rem; color: var(--success-color);"
+                    th:text="${resolvedCount}">0</div>
+                <div class="stat-label">Cases Resolved</div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Problem Info</th>
+                        <th>Location</th>
+                        <th>Severity</th>
+                        <th>Score</th>
+                        <th>Status</th>
+                        <th>Update Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${problems}">
+                        <td th:text="${p.id}">1</td>
+                        <td>
+                            <strong th:text="${p.title}">Title</strong><br>
+                            <small th:text="${p.type}" style="color: var(--secondary-color);"></small>
+                        </td>
+                        <td>
+                            <span th:text="${p.city}">City</span><br>
+                            <small th:text="${p.area}" style="color: var(--secondary-color);"></small>
+                        </td>
+                        <td>
+                            <span class="status-badge" th:text="${p.severity}"
+                                th:classappend="${p.severity == 'High' ? 'priority-high' : (p.severity == 'Medium' ? 'priority-medium' : 'priority-low')}"
+                                style="color:white; text-shadow: 1px 1px 0 #000;">
+                                High
+                            </span>
+                        </td>
+                        <td th:text="${p.priority}">0</td>
+                        <td>
+                            <span class="status-badge" th:text="${p.status}"
+                                th:classappend="${p.status == 'Resolved' ? 'status-resolved' : 'status-open'}">
+                                Open
+                            </span>
+                        </td>
+                        <td>
+                            <form th:action="@{/admin/updateStatus/{id}(id=${p.id})}" method="post" class="action-form">
+                                <select name="status" class="form-control" style="padding: 0.25rem; font-size: 0.8rem;">
+                                    <option value="Open" th:selected="${p.status == 'Open'}">Open</option>
+                                    <option value="In Progress" th:selected="${p.status == 'In Progress'}">In Progress
+                                    </option>
+                                    <option value="Resolved" th:selected="${p.status == 'Resolved'}">Resolved</option>
+                                    <option value="Rejected" th:selected="${p.status == 'Rejected'}">Rejected</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary"
+                                    style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Update</button>
+                            </form>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/delete/{id}(id=${p.id})}" class="btn btn-danger"
+                                style="padding: 0.25rem 0.75rem; font-size: 0.8rem;"
+                                onclick="return confirm('Delete this record permanantly?')">Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:src="@{/js/script.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+com\crowd\mapper\repository\ProblemRepository.class
+com\crowd\mapper\model\Problem.class
+com\crowd\mapper\controller\ProblemController.class
+com\crowd\mapper\service\ProblemService.class
+com\crowd\mapper\CrowdMapperApplication.class
+com\crowd\mapper\config\WebConfig.class
