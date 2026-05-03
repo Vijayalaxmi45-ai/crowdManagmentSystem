@@ -56,7 +56,11 @@ public class SecurityConfig {
                                  "/css/**", "/js/**", "/images/**").permitAll()
                 // Admin-only pages
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                // All other pages (dashboard, map, profile, etc.) require login
+                // Report-only for Citizens
+                .requestMatchers("/report", "/report/**").hasRole("USER")
+                // Verification for Staff and Admin
+                .requestMatchers("/verify/**").hasAnyRole("STAFF", "ADMIN")
+                // All other pages require login
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

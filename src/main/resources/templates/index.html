@@ -18,9 +18,9 @@
         <div class="sidebar-nav">
             <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
             <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
-            <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
+            <a href="/report" class="sidebar-link" th:if="${isUser}"><span>📝</span> Report Issue</a>
             <a href="/verify" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>✓</span> Verify</a>
-            <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
+            <a href="/my-complaints" class="sidebar-link"><span>📋</span> <span th:text="${isUser ? 'My Complaints' : 'System Issues'}">My Complaints</span></a>
             <a href="/qr-entry" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>🔲</span> QR Entry</a>
             <a href="/notifications" class="sidebar-link"><span>🔔</span> Notifications</a>
             <a href="/admin" class="sidebar-link" th:if="${isAdmin}"><span>🛠️</span> Admin Panel</a>
@@ -30,9 +30,7 @@
             <a href="/about" class="sidebar-link"><span>ℹ️</span> About Us</a>
             <a href="/contact" class="sidebar-link"><span>📧</span> Contact</a>
             <button id="theme-toggle" class="sidebar-link" style="width:100%; border:none; cursor:pointer; background:transparent; font-size:1rem; text-align:left;"><span>🌙</span> Dark Mode</button>
-            
-            <a th:if="${!isLoggedIn}" href="/login" class="sidebar-link" style="color: var(--primary-color);"><span>🔐</span> Login</a>
-            <a th:if="${isLoggedIn}" href="/logout" class="sidebar-link" style="color: var(--danger-color);"><span>🚪</span> Logout</a>
+            <a href="/logout" class="sidebar-link" style="color: var(--danger-color);"><span>🚪</span> Logout</a>
         </div>
     </aside>
 

@@ -41,8 +41,8 @@
         <div class="container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                 <div>
-                    <h1 style="font-size: 2rem; color: var(--primary-color);">📋 My Complaints</h1>
-                    <p style="color: var(--secondary-color);">Track all issues you have reported.</p>
+                    <h1 style="font-size: 2rem; color: var(--primary-color);">📋 <span th:text="${isUser ? 'My Complaints' : 'System Issues'}">Complaints</span></h1>
+                    <p style="color: var(--secondary-color);" th:text="${isUser ? 'Track all issues you have reported.' : 'Monitor and manage all reported civic issues.'}">Track status.</p>
                 </div>
                 <a href="/report" class="btn btn-primary">+ Report New Issue</a>
             </div>

@@ -30,7 +30,7 @@
         <div class="sidebar-nav">
             <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
             <a href="/live-tracking" class="sidebar-link active"><span>🗺️</span> Live Map</a>
-            <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
+            <a href="/report" class="sidebar-link" th:if="${isUser}"><span>📝</span> Report Issue</a>
             <a href="/verify" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>✓</span> Verify</a>
             <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
             <a href="/qr-entry" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>🔲</span> QR Entry</a>
@@ -87,7 +87,10 @@
         maxZoom: 19
     }).addTo(map);
 
-    // Mock crowd data — replace with API call as needed
+    // Map Layer Group for markers
+    const markerGroup = L.layerGroup().addTo(map);
+
+    // Mock crowd data
     const allLocations = [
         { id:1, name:"City Center", lat:18.5204, lng:73.8567, current:850, max:1000, status:"Crowded", city:"Pune" },
         { id:2, name:"Tech Park",   lat:18.5679, lng:73.9143, current:300, max:1500, status:"Normal",  city:"Pune" },
@@ -95,8 +98,10 @@
         { id:4, name:"Gateway of India", lat:18.9220, lng:72.8347, current:450, max:500, status:"Crowded", city:"Mumbai" },
         { id:5, name:"Dadar",      lat:19.0176, lng:72.8562, current:250, max:800, status:"Normal",  city:"Mumbai" },
         { id:6, name:"Connaught Place", lat:28.6315, lng:77.2167, current:700, max:900, status:"Crowded", city:"Delhi" },
-        { id:7, name:"Solapur Market", lat:17.6868, lng:75.9060, current:180, max:600, status:"Normal", city:"Solapur" },
-       // Problems from DB
+        { id:7, name:"Solapur Market", lat:17.6868, lng:75.9060, current:180, max:600, status:"Normal", city:"Solapur" }
+    ];
+
+    // Problems from DB
     const dbProblems = /*[[${problems}]]*/ [];
 
     function getMarkerColor(pct) { return pct > 80 ? 'red' : pct > 50 ? 'orange' : 'green'; }
@@ -117,7 +122,7 @@
             const color = getMarkerColor(pct);
             const icon = L.divIcon({
                 className: '',
-                html: `<div style="background:${color};width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px-6px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:white;font-size:10px;">👥</div>`,
+                html: `<div style="background:${color};width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:white;font-size:10px;">👥</div>`,
                 iconSize: [20, 20], iconAnchor: [10, 10]
             });
             L.marker([loc.lat, loc.lng], { icon })
@@ -126,7 +131,7 @@
         });
 
         // Render Reported Problems
-        if (problems) {
+        if (problems && problems.length > 0) {
             problems.forEach(p => {
                 const color = getProblemColor(p.status);
                 const icon = L.divIcon({
@@ -134,7 +139,19 @@
                     html: `<div style="background:${color};width:22px;height:22px;border-radius:50%;border:3px solid white;box-shadow:0 3px 8px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:white;font-size:12px;">⚠️</div>`,
                     iconSize: [22, 22], iconAnchor: [11, 11]
                 });
-                L.marker([p.latitude || 18.5204 + (Math.random()-0.5)*0.1, p.longitude || 73.8567 + (Math.random()-0.5)*0.1], { icon })
+                
+                // Use actual lat/lng if available, otherwise fallback to city center + jitter
+                let lat = p.latitude;
+                let lng = p.longitude;
+                
+                if (!lat || !lng) {
+                    const cityCoords = { "Pune": [18.5204, 73.8567], "Mumbai": [18.9220, 72.8347], "Delhi": [28.6315, 77.2167], "Solapur": [17.6868, 75.9060] };
+                    const coords = cityCoords[p.city] || [18.5204, 73.8567];
+                    lat = coords[0] + (Math.random()-0.5)*0.05;
+                    lng = coords[1] + (Math.random()-0.5)*0.05;
+                }
+
+                L.marker([lat, lng], { icon })
                     .bindPopup(`<b>⚠️ ${p.title}</b><br>Status: <span style="color:${color};font-weight:bold;">${p.status}</span><br>City: ${p.city}<br><small>${p.description}</small>`)
                     .addTo(markerGroup);
             });
@@ -167,8 +184,19 @@
         const city = document.getElementById('cityFilter').value;
         const filteredLocs = city === 'ALL' ? allLocations : allLocations.filter(l => l.city === city);
         const filteredProbs = city === 'ALL' ? dbProblems : dbProblems.filter(p => p.city === city);
+        
         renderMap(filteredLocs, filteredProbs);
         renderCards(filteredLocs);
+
+        // Center map on city
+        if (city !== 'ALL') {
+            const cityCoords = { "Pune": [18.5204, 73.8567], "Mumbai": [18.9220, 72.8347], "Delhi": [28.6315, 77.2167], "Solapur": [17.6868, 75.9060] };
+            if (cityCoords[city]) {
+                map.setView(cityCoords[city], 12);
+            }
+        } else {
+            map.setView([18.5204, 73.8567], 11);
+        }
     }
 
     function locateMe() {

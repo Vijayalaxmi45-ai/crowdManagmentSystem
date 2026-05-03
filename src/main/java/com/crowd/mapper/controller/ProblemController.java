@@ -35,6 +35,7 @@ public class ProblemController {
             model.addAttribute("loggedInUser", principal.getName());
             model.addAttribute("isAdmin", request.isUserInRole("ADMIN"));
             model.addAttribute("isStaff", request.isUserInRole("STAFF"));
+            model.addAttribute("isUser", request.isUserInRole("USER"));
         }
         model.addAttribute("isLoggedIn", principal != null);
     }

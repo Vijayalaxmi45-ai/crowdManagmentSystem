@@ -32,12 +32,13 @@
     <aside class="sidebar">
         <a href="/" class="logo">CrowdMapper</a>
         <div class="sidebar-nav">
-            <a href="/dashboard" class="sidebar-link active"><span>📊</span> Dashboard</a>
+            <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
             <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
-            <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
+            <a href="/report" class="sidebar-link" th:if="${isUser}"><span>📝</span> Report Issue</a>
             <a href="/verify" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>✓</span> Verify</a>
-            <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
+            <a href="/my-complaints" class="sidebar-link"><span>📋</span> <span th:text="${isUser ? 'My Complaints' : 'System Issues'}">My Complaints</span></a>
             <a href="/qr-entry" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>🔲</span> QR Entry</a>
+            <a href="/notifications" class="sidebar-link"><span>🔔</span> Notifications</a>
             <a href="/admin" class="sidebar-link" th:if="${isAdmin}"><span>🛠️</span> Admin Panel</a>
         </div>
         <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem;">

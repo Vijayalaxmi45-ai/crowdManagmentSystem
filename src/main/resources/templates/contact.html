@@ -3,7 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Contact - Crowd Mapper</title>    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🗺️</text></svg>" type="image/svg+xml">    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Contact - Crowd Mapper</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🗺️</text></svg>" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
@@ -14,10 +16,10 @@
         <div class="sidebar-nav">
             <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
             <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
-            <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
-            <a href="/verify" class="sidebar-link"><span>✓</span> Verify</a>
-            <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
-            <a href="/qr-entry" class="sidebar-link"><span>🔲</span> QR Entry</a>
+            <a href="/report" class="sidebar-link" th:if="${isUser}"><span>📝</span> Report Issue</a>
+            <a href="/verify" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>✓</span> Verify</a>
+            <a href="/my-complaints" class="sidebar-link"><span>📋</span> <span th:text="${isUser ? 'My Complaints' : 'System Issues'}">My Complaints</span></a>
+            <a href="/qr-entry" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>🔲</span> QR Entry</a>
             <a href="/notifications" class="sidebar-link"><span>🔔</span> Notifications</a>
             <a href="/admin" class="sidebar-link" th:if="${isAdmin}"><span>🛠️</span> Admin Panel</a>
         </div>
@@ -82,17 +84,11 @@
                         </p>
                     </div>
                     <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--primary-color);">
-                        <h4 style="margin-bottom: 0.5rem;">📞 Call Us</h4>
+                        <h4>📞 Call Us</h4>
                         <p style="font-size: 0.95rem; color: var(--secondary-color);">
                             Toll Free: 1800-CROWD-MAP<br>
                             Office: +91 20 2345 6789
                         </p>
-                    </div>
-                    <div style="margin-top: auto; padding: 1.5rem; background: rgba(74, 144, 226, 0.1); border-radius: 12px; text-align: center;">
-                        <p style="font-weight: 600; color: var(--primary-color);">Follow our journey</p>
-                        <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; font-size: 1.5rem;">
-                            <span>🐦</span> <span>📸</span> <span>💼</span> <span>💻</span>
-                        </div>
                     </div>
                 </div>
             </div>
