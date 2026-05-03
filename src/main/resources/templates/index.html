@@ -19,9 +19,9 @@
             <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
             <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
             <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
-            <a href="/verify" class="sidebar-link"><span>✓</span> Verify</a>
+            <a href="/verify" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>✓</span> Verify</a>
             <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
-            <a href="/qr-entry" class="sidebar-link"><span>🔲</span> QR Entry</a>
+            <a href="/qr-entry" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>🔲</span> QR Entry</a>
             <a href="/notifications" class="sidebar-link"><span>🔔</span> Notifications</a>
             <a href="/admin" class="sidebar-link" th:if="${isAdmin}"><span>🛠️</span> Admin Panel</a>
         </div>

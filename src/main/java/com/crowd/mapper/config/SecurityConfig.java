@@ -39,9 +39,13 @@ public class SecurityConfig {
         return manager;
     }
 
+    @Autowired
+    private CustomAuthenticationProvider customAuthenticationProvider;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .authenticationProvider(customAuthenticationProvider)
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/verify/**", "/report", "/admin/**", "/logout")
             )

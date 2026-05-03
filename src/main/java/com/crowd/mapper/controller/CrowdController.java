@@ -15,14 +15,32 @@ public class CrowdController {
     @Autowired
     private CrowdService crowdService;
 
+    @Autowired
+    private com.crowd.mapper.service.ProblemService problemService;
+
     @GetMapping("/live-tracking")
-    public String liveTrackingPage(Model model) {
+    public String liveTrackingPage(Model model, jakarta.servlet.http.HttpServletRequest request) {
+        // Pass user info
+        var principal = request.getUserPrincipal();
+        if (principal != null) {
+            model.addAttribute("loggedInUser", principal.getName());
+            model.addAttribute("isAdmin", request.isUserInRole("ADMIN"));
+            model.addAttribute("isStaff", request.isUserInRole("STAFF"));
+        }
+        model.addAttribute("isLoggedIn", principal != null);
+        
         model.addAttribute("locations", crowdService.getAllLocations());
+        model.addAttribute("problems", problemService.getAllProblemsSorted());
         return "live-tracking";
     }
 
     @GetMapping("/qr-entry")
-    public String qrEntryPage() {
+    public String qrEntryPage(Model model, jakarta.servlet.http.HttpServletRequest request) {
+        var principal = request.getUserPrincipal();
+        if (principal != null) {
+            model.addAttribute("isAdmin", request.isUserInRole("ADMIN"));
+            model.addAttribute("isStaff", request.isUserInRole("STAFF"));
+        }
         return "qr-entry";
     }
 

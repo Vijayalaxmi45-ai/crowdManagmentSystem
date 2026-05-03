@@ -32,25 +32,57 @@ public class ProblemService {
         problem.setPriority(severityScore);
 
         if (problem.getStatus() == null) {
-            problem.setStatus("Open");
+            problem.setStatus("PENDING");
         }
 
         problemRepository.save(problem);
     }
 
-    public void voteProblem(Long id, boolean isConfirm) {
+    public void verifyProblem(Long id, boolean isValid, String remarks, String proofImage) {
         Optional<Problem> optionalProblem = problemRepository.findById(id);
         if (optionalProblem.isPresent()) {
             Problem p = optionalProblem.get();
-            if (isConfirm) {
-                p.setConfirms(p.getConfirms() + 1);
-            } else {
-                p.setRejects(p.getRejects() + 1);
-            }
-            // Recalculate priority: (Confirms - Rejects) + SeverityScore
-            int severityScore = getSeverityScore(p.getSeverity());
-            p.setPriority((p.getConfirms() - p.getRejects()) + severityScore);
+            p.setStatus(isValid ? "VERIFIED" : "REJECTED");
+            p.setRemarks(remarks);
+            if (proofImage != null) p.setVerificationProofImage(proofImage);
+            problemRepository.save(p);
+        }
+    }
 
+    public void approveProblem(Long id, boolean isApproved) {
+        Optional<Problem> optionalProblem = problemRepository.findById(id);
+        if (optionalProblem.isPresent()) {
+            Problem p = optionalProblem.get();
+            p.setStatus(isApproved ? "APPROVED" : "REJECTED");
+            problemRepository.save(p);
+        }
+    }
+
+    public void resolveProblem(Long id, String proofImage) {
+        Optional<Problem> optionalProblem = problemRepository.findById(id);
+        if (optionalProblem.isPresent()) {
+            Problem p = optionalProblem.get();
+            p.setStatus("RESOLVED");
+            if (proofImage != null) p.setResolutionProofImage(proofImage);
+            problemRepository.save(p);
+        }
+    }
+
+    public void assignToStaff(Long id, Long staffId) {
+        // Mock assignment logic - in a real app, find user by id
+        Optional<Problem> optionalProblem = problemRepository.findById(id);
+        if (optionalProblem.isPresent()) {
+            Problem p = optionalProblem.get();
+            // p.setAssignedStaff(staffService.findById(staffId));
+            problemRepository.save(p);
+        }
+    }
+
+    public void updateStatus(Long id, String status) {
+        Optional<Problem> optionalProblem = problemRepository.findById(id);
+        if (optionalProblem.isPresent()) {
+            Problem p = optionalProblem.get();
+            p.setStatus(status);
             problemRepository.save(p);
         }
     }
@@ -73,15 +105,6 @@ public class ProblemService {
 
     public long getCountBySeverity(String severity) {
         return problemRepository.countBySeverity(severity);
-    }
-
-    public void updateStatus(Long id, String status) {
-        Optional<Problem> optionalProblem = problemRepository.findById(id);
-        if (optionalProblem.isPresent()) {
-            Problem p = optionalProblem.get();
-            p.setStatus(status);
-            problemRepository.save(p);
-        }
     }
 
     public void deleteProblem(Long id) {

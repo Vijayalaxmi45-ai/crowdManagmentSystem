@@ -65,7 +65,7 @@ public class ProblemController {
         return "redirect:/";
     }
 
-    // 3. Verify
+    // 3. Verify (Staff and Admin)
     @GetMapping("/verify")
     public String verifyPage(Model model, HttpServletRequest request) {
         addLocaleToModel(model, request);
@@ -74,9 +74,8 @@ public class ProblemController {
     }
 
     @PostMapping("/verify/{id}")
-    public String verifyProblem(@PathVariable Long id, @RequestParam String action) {
-        boolean isConfirm = "confirm".equals(action);
-        problemService.voteProblem(id, isConfirm);
+    public String verifyProblem(@PathVariable Long id, @RequestParam boolean isValid, @RequestParam String remarks) {
+        problemService.verifyProblem(id, isValid, remarks, null);
         return "redirect:/verify";
     }
 
@@ -86,10 +85,10 @@ public class ProblemController {
         addLocaleToModel(model, request);
         model.addAttribute("totalProblems", problemService.getTotalProblems());
         model.addAttribute("topProblems", problemService.getTop5Problems());
-        model.addAttribute("highPriorityCount", problemService.getCountBySeverity("High"));
-        model.addAttribute("mediumPriorityCount", problemService.getCountBySeverity("Medium"));
-        model.addAttribute("lowPriorityCount", problemService.getCountBySeverity("Low"));
-        model.addAttribute("resolvedCount", problemService.getCountByStatus("Resolved"));
+        model.addAttribute("pendingCount", problemService.getCountByStatus("PENDING"));
+        model.addAttribute("verifiedCount", problemService.getCountByStatus("VERIFIED"));
+        model.addAttribute("approvedCount", problemService.getCountByStatus("APPROVED"));
+        model.addAttribute("resolvedCount", problemService.getCountByStatus("RESOLVED"));
         model.addAttribute("totalVerifications", problemService.getTotalVerifications());
         return "dashboard";
     }
@@ -100,9 +99,27 @@ public class ProblemController {
         addLocaleToModel(model, request);
         model.addAttribute("problems", problemService.getAllProblemsSorted());
         model.addAttribute("totalProblems", problemService.getTotalProblems());
-        model.addAttribute("resolvedCount", problemService.getCountByStatus("Resolved"));
-        model.addAttribute("highPriorityCount", problemService.getCountBySeverity("High"));
+        model.addAttribute("resolvedCount", problemService.getCountByStatus("RESOLVED"));
+        model.addAttribute("pendingCount", problemService.getCountByStatus("PENDING"));
         return "admin";
+    }
+
+    @PostMapping("/admin/approve/{id}")
+    public String approveProblem(@PathVariable Long id, @RequestParam boolean isApproved) {
+        problemService.approveProblem(id, isApproved);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/admin/assign/{id}")
+    public String assignProblem(@PathVariable Long id, @RequestParam Long staffId) {
+        problemService.assignToStaff(id, staffId);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/admin/resolve/{id}")
+    public String resolveProblem(@PathVariable Long id) {
+        problemService.resolveProblem(id, null);
+        return "redirect:/admin";
     }
 
     // 6. Login — PUBLIC
@@ -111,25 +128,11 @@ public class ProblemController {
         addLocaleToModel(model, request);
         return "login";
     }
-
-    @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password) {
-        if ("admin".equals(username) && "admin123".equals(password)) {
-            return "redirect:/admin";
-        }
-        return "redirect:/login?error";
-    }
     
     @GetMapping("/register")
     public String registerPage(Model model, HttpServletRequest request) {
         addLocaleToModel(model, request);
         return "register";
-    }
-
-    @PostMapping("/admin/updateStatus/{id}")
-    public String updateStatus(@PathVariable Long id, @RequestParam String status) {
-        problemService.updateStatus(id, status);
-        return "redirect:/admin";
     }
 
     @GetMapping("/admin/delete/{id}")

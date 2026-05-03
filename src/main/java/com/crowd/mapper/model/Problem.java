@@ -34,7 +34,7 @@ public class Problem {
     private String description;
 
     private String severity; // Low, Medium, High
-    private String status = "Open"; // Open, In Progress, Resolved
+    private String status = "PENDING"; // PENDING, VERIFIED, APPROVED, RESOLVED, REJECTED
 
     private int confirms = 0;
     private int rejects = 0;
@@ -53,12 +53,11 @@ public class Problem {
     @JoinColumn(name = "assigned_staff_id")
     private User assignedStaff;
 
-    // Workflow: PENDING -> APPROVED -> ASSIGNED -> IN_PROGRESS -> RESOLVED
-    private String workflowStatus = "PENDING";
-    
+    // Detailed field notes/remarks
     @Column(length = 1000)
     private String remarks;
 
     private String imagePath; // Path to user uploaded proof
+    private String verificationProofImage; // Path to staff uploaded proof
     private String resolutionProofImage; // Path to staff uploaded resolution proof
 }
