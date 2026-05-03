@@ -156,4 +156,19 @@ public class ProblemController {
         addLocaleToModel(model, request);
         return "notifications";
     }
+
+    // 9. My Complaints Page
+    @GetMapping("/my-complaints")
+    public String myComplaintsPage(Model model, HttpServletRequest request) {
+        addLocaleToModel(model, request);
+        model.addAttribute("problems", problemService.getAllProblemsSorted());
+        return "my-complaints";
+    }
+
+    // 10. Profile Page
+    @GetMapping("/profile")
+    public String profilePage(Model model, HttpServletRequest request) {
+        addLocaleToModel(model, request);
+        return "profile";
+    }
 }

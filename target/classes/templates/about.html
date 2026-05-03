@@ -87,151 +87,164 @@
 </head>
 
 <body>
-    <nav>
+<div class="layout-wrapper">
+    <!-- Modern Left Side Navigation Bar -->
+    <aside class="sidebar">
         <a href="/" class="logo">CrowdMapper</a>
-        <div class="nav-links">
-            <a href="/">🏠 Home</a>
-            <a href="/report">📝 Report</a>
-            <a href="/verify">✓ Verify</a>
-            <a href="/dashboard">📊 Dashboard</a>
-            <a href="/admin">⚙️ Admin</a>
-            <button id="theme-toggle" class="theme-toggle">🌙</button>
-            <a href="/login" style="background: linear-gradient(135deg, var(--primary-color), #8b5cf6); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none;">🔐 Login</a>
+        <div class="sidebar-nav">
+            <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
+            <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
+            <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
+            <a href="/verify" class="sidebar-link"><span>✓</span> Verify</a>
+            <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
+            <a href="/qr-entry" class="sidebar-link"><span>🔲</span> QR Entry</a>
+            <a href="/notifications" class="sidebar-link"><span>🔔</span> Notifications</a>
+            <a href="/admin" class="sidebar-link" th:if="${isAdmin}"><span>🛠️</span> Admin Panel</a>
         </div>
-    </nav>
-
-    <div class="container">
-        <!-- Project Overview -->
-        <div class="about-section">
-            <h2>📍 About CrowdMapper</h2>
-            <p th:text="#{about.desc1}">CrowdMapper is an innovative civic technology platform that harnesses the power of crowdsourcing...</p>
-            <p th:text="#{about.desc2}">The platform enables citizens to report problems...</p>
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="/profile" class="sidebar-link"><span>👤</span> Profile</a>
+            <a href="/about" class="sidebar-link active"><span>ℹ️</span> About Us</a>
+            <a href="/contact" class="sidebar-link"><span>📧</span> Contact</a>
+            <button id="theme-toggle" class="sidebar-link" style="width:100%; border:none; cursor:pointer; background:transparent; font-size:1rem; text-align:left;"><span>🌙</span> Dark Mode</button>
+            <a href="/logout" class="sidebar-link" style="color: var(--danger-color);"><span>🚪</span> Logout</a>
         </div>
+    </aside>
 
-        <!-- Project Objectives -->
-        <div class="about-section">
-            <h2>🎯 Our Objectives</h2>
-            <ul class="objectives-list">
-                <li th:text="#{objectives.1}">Democratize civic issue reporting</li>
-                <li th:text="#{objectives.2}">Ensure Credibility</li>
-                <li th:text="#{objectives.3}">Optimize Resolution</li>
-                <li th:text="#{objectives.4}">Promote Transparency</li>
-                <li th:text="#{objectives.5}">Enable Data-Driven Planning</li>
-            </ul>
-        </div>
+    <main class="main-content">
+        <div class="container">
+            <!-- Project Overview -->
+            <div class="about-section">
+                <h2>📍 About CrowdMapper</h2>
+                <p th:text="#{about.desc1}">CrowdMapper is an innovative civic technology platform that harnesses the power of crowdsourcing...</p>
+                <p th:text="#{about.desc2}">The platform enables citizens to report problems...</p>
+            </div>
 
-        <!-- Key Features -->
-        <div class="about-section">
-            <h2>✨ Key Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="icon">📱</div>
-                    <h3>Real-time Reporting</h3>
-                    <p>Geotagged civic issue submission with photos</p>
+            <!-- Project Objectives -->
+            <div class="about-section">
+                <h2>🎯 Our Objectives</h2>
+                <ul class="objectives-list">
+                    <li th:text="#{objectives.1}">Democratize civic issue reporting</li>
+                    <li th:text="#{objectives.2}">Ensure Credibility</li>
+                    <li th:text="#{objectives.3}">Optimize Resolution</li>
+                    <li th:text="#{objectives.4}">Promote Transparency</li>
+                    <li th:text="#{objectives.5}">Enable Data-Driven Planning</li>
+                </ul>
+            </div>
+
+            <!-- Key Features -->
+            <div class="about-section">
+                <h2>✨ Key Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="icon">📱</div>
+                        <h3>Real-time Reporting</h3>
+                        <p>Geotagged civic issue submission with photos</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">👥</div>
+                        <h3>Crowd Verification</h3>
+                        <p>Democratic approach to validate reports</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🚀</div>
+                        <h3>Smart Prioritization</h3>
+                        <p>AI-calculated urgency scores for resource allocation</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h3>Admin Dashboard</h3>
+                        <p>Comprehensive analytics and issue management</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🌍</div>
+                        <h3>Multilingual Support</h3>
+                        <p>Hindi, Marathi, and English interface</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📈</div>
+                        <h3>Performance Metrics</h3>
+                        <p>Measure municipal response and resolution times</p>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <div class="icon">👥</div>
-                    <h3>Crowd Verification</h3>
-                    <p>Democratic approach to validate reports</p>
+            </div>
+
+            <!-- How It Works in Detail -->
+            <div class="about-section">
+                <h2>⚙️ How It Works</h2>
+                <p th:text="#{howitworks.detailed}">Our platform follows a 4-step process...</p>
+                
+                <h3 style="margin-top: 2rem; color: var(--primary-color);">📢 STEP 1: Citizen Reports Problem</h3>
+                <p th:text="#{howitworks.step1.desc}">Citizens download the CrowdMapper app...</p>
+                
+                <h3 style="margin-top: 1.5rem; color: var(--primary-color);">👥 STEP 2: Community Verification</h3>
+                <p th:text="#{howitworks.step2.desc}">Other citizens receive notifications...</p>
+                
+                <h3 style="margin-top: 1.5rem; color: var(--primary-color);">🤖 STEP 3: AI-Powered Prioritization</h3>
+                <p th:text="#{howitworks.step3.desc}">Our system calculates urgency scores...</p>
+                
+                <h3 style="margin-top: 1.5rem; color: var(--primary-color);">✅ STEP 4: Authority Action & Feedback</h3>
+                <p th:text="#{howitworks.step4.desc}">Municipal authorities access the admin dashboard...</p>
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="about-section">
+                <h2>💻 Technology Stack</h2>
+                <p style="margin-bottom: 2rem;">CrowdMapper is built with modern, enterprise-grade technologies:</p>
+                
+                <div class="tech-grid">
+                    <div class="tech-card">
+                        <h4>Backend Framework</h4>
+                        <p><strong>Spring Boot 3.2.0</strong> - Enterprise Java framework for building RESTful APIs and web services with rapid development capabilities.</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>Architecture Pattern</h4>
+                        <p><strong>Spring MVC & Spring Data JPA</strong> - Model View Controller pattern for organized structure and simplified database operations.</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>Database</h4>
+                        <p><strong>H2 (Development) / PostgreSQL Ready</strong> - In-memory relational database for development with production-ready PostgreSQL support.</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>Frontend</h4>
+                        <p><strong>Thymeleaf, HTML5 & CSS3</strong> - Server-side template engine with modern web standards for dynamic, responsive interfaces.</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>Client-side Logic</h4>
+                        <p><strong>JavaScript</strong> - Vanilla JS for interactive features, form validation, and dynamic user experience.</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>Build & Deployment</h4>
+                        <p><strong>Apache Maven & Java 17</strong> - Dependency management with latest LTS version. Spring Boot JAR for containerization.</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>Design Principles</h4>
+                        <p><strong>Microservices Ready</strong> - RESTful APIs, stateless design, and responsive UI supporting mobile-first approach.</p>
+                    </div>
+                    <div class="tech-card">
+                        <h4>Development Tools</h4>
+                        <p><strong>Spring DevTools</strong> - Live reload for faster development iteration and immediate feedback.</p>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <div class="icon">🚀</div>
-                    <h3>Smart Prioritization</h3>
-                    <p>AI-calculated urgency scores for resource allocation</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">📊</div>
-                    <h3>Admin Dashboard</h3>
-                    <p>Comprehensive analytics and issue management</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">🌍</div>
-                    <h3>Multilingual Support</h3>
-                    <p>Hindi, Marathi, and English interface</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">📈</div>
-                    <h3>Performance Metrics</h3>
-                    <p>Measure municipal response and resolution times</p>
-                </div>
+            </div>
+
+            <!-- Project Info -->
+            <div class="about-section">
+                <h2>📚 Project Information</h2>
+                <p><strong>Project Type:</strong> Final Year Degree Project</p>
+                <p><strong>Department:</strong> Department of Computer Science & Engineering</p>
+                <p><strong>Institution:</strong> College of Engineering & Technology</p>
+                <p><strong>Version:</strong> 1.0</p>
+                <p><strong>Team:</strong> Crowd Solutions Initiative</p>
+                <p><strong>Mission:</strong> Empowering Citizens through Civic Technology</p>
             </div>
         </div>
 
-        <!-- How It Works in Detail -->
-        <div class="about-section">
-            <h2>⚙️ How It Works</h2>
-            <p th:text="#{howitworks.detailed}">Our platform follows a 4-step process...</p>
-            
-            <h3 style="margin-top: 2rem; color: var(--primary-color);">📢 STEP 1: Citizen Reports Problem</h3>
-            <p th:text="#{howitworks.step1.desc}">Citizens download the CrowdMapper app...</p>
-            
-            <h3 style="margin-top: 1.5rem; color: var(--primary-color);">👥 STEP 2: Community Verification</h3>
-            <p th:text="#{howitworks.step2.desc}">Other citizens receive notifications...</p>
-            
-            <h3 style="margin-top: 1.5rem; color: var(--primary-color);">🤖 STEP 3: AI-Powered Prioritization</h3>
-            <p th:text="#{howitworks.step3.desc}">Our system calculates urgency scores...</p>
-            
-            <h3 style="margin-top: 1.5rem; color: var(--primary-color);">✅ STEP 4: Authority Action & Feedback</h3>
-            <p th:text="#{howitworks.step4.desc}">Municipal authorities access the admin dashboard...</p>
-        </div>
-
-        <!-- Technology Stack -->
-        <div class="about-section">
-            <h2>💻 Technology Stack</h2>
-            <p style="margin-bottom: 2rem;">CrowdMapper is built with modern, enterprise-grade technologies:</p>
-            
-            <div class="tech-grid">
-                <div class="tech-card">
-                    <h4>Backend Framework</h4>
-                    <p><strong>Spring Boot 3.2.0</strong> - Enterprise Java framework for building RESTful APIs and web services with rapid development capabilities.</p>
-                </div>
-                <div class="tech-card">
-                    <h4>Architecture Pattern</h4>
-                    <p><strong>Spring MVC & Spring Data JPA</strong> - Model View Controller pattern for organized structure and simplified database operations.</p>
-                </div>
-                <div class="tech-card">
-                    <h4>Database</h4>
-                    <p><strong>H2 (Development) / PostgreSQL Ready</strong> - In-memory relational database for development with production-ready PostgreSQL support.</p>
-                </div>
-                <div class="tech-card">
-                    <h4>Frontend</h4>
-                    <p><strong>Thymeleaf, HTML5 & CSS3</strong> - Server-side template engine with modern web standards for dynamic, responsive interfaces.</p>
-                </div>
-                <div class="tech-card">
-                    <h4>Client-side Logic</h4>
-                    <p><strong>JavaScript</strong> - Vanilla JS for interactive features, form validation, and dynamic user experience.</p>
-                </div>
-                <div class="tech-card">
-                    <h4>Build & Deployment</h4>
-                    <p><strong>Apache Maven & Java 17</strong> - Dependency management with latest LTS version. Spring Boot JAR for containerization.</p>
-                </div>
-                <div class="tech-card">
-                    <h4>Design Principles</h4>
-                    <p><strong>Microservices Ready</strong> - RESTful APIs, stateless design, and responsive UI supporting mobile-first approach.</p>
-                </div>
-                <div class="tech-card">
-                    <h4>Development Tools</h4>
-                    <p><strong>Spring DevTools</strong> - Live reload for faster development iteration and immediate feedback.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Project Info -->
-        <div class="about-section">
-            <h2>📚 Project Information</h2>
-            <p><strong>Project Type:</strong> Final Year Degree Project</p>
-            <p><strong>Department:</strong> Department of Computer Science & Engineering</p>
-            <p><strong>Institution:</strong> College of Engineering & Technology</p>
-            <p><strong>Version:</strong> 1.0</p>
-            <p><strong>Team:</strong> Crowd Solutions Initiative</p>
-            <p><strong>Mission:</strong> Empowering Citizens through Civic Technology</p>
-        </div>
-    </div>
-
-    <footer style="margin-top: 4rem; padding: 2rem; background: var(--surface); text-align: center; border-top: 1px solid var(--border-color);">
-        <p th:text="#{footer.copyright}">© 2025-2026 CrowdMapper</p>
-        <p th:text="#{footer.tagline}">Empowering Citizens through Civic Technology</p>
-    </footer>
+        <footer style="margin-top: 4rem; padding: 2rem; background: var(--surface); text-align: center; border-top: 1px solid var(--border-color);">
+            <p th:text="#{footer.copyright}">© 2025-2026 CrowdMapper</p>
+            <p th:text="#{footer.tagline}">Empowering Citizens through Civic Technology</p>
+        </footer>
+    </main>
+</div>
 
     <script th:src="@{/js/script.js}"></script>
 </body>

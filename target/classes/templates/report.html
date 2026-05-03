@@ -10,151 +10,163 @@
 </head>
 
 <body>
-
-    <nav>
+<div class="layout-wrapper">
+    <!-- Modern Left Side Navigation Bar -->
+    <aside class="sidebar">
         <a href="/" class="logo">CrowdMapper</a>
-        <div class="nav-links">
-            <a href="/" th:text="#{nav.home}">Home</a>
-            <a href="/report" th:text="#{nav.report}">Report Problem</a>
-            <a href="/verify" th:text="#{nav.verify}">Verify</a>
-            <a href="/dashboard" th:text="#{nav.dashboard}">Dashboard</a>
-            <a href="/admin" th:text="#{nav.admin}">Admin</a>
-            <button id="theme-toggle" class="theme-toggle">🌙</button>
-            <a href="/login" style="background: linear-gradient(135deg, var(--primary-color), #8b5cf6); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none;">🔐 Login</a>
+        <div class="sidebar-nav">
+            <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
+            <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
+            <a href="/report" class="sidebar-link active"><span>📝</span> Report Issue</a>
+            <a href="/verify" class="sidebar-link"><span>✓</span> Verify</a>
+            <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
+            <a href="/qr-entry" class="sidebar-link"><span>🔲</span> QR Entry</a>
+            <a href="/notifications" class="sidebar-link"><span>🔔</span> Notifications</a>
+            <a href="/admin" class="sidebar-link" th:if="${isAdmin}"><span>🛠️</span> Admin Panel</a>
         </div>
-    </nav>
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="/profile" class="sidebar-link"><span>👤</span> Profile</a>
+            <a href="/about" class="sidebar-link"><span>ℹ️</span> About Us</a>
+            <a href="/contact" class="sidebar-link"><span>📧</span> Contact</a>
+            <button id="theme-toggle" class="sidebar-link" style="width:100%; border:none; cursor:pointer; background:transparent; font-size:1rem; text-align:left;"><span>🌙</span> Dark Mode</button>
+            <a href="/logout" class="sidebar-link" style="color: var(--danger-color);"><span>🚪</span> Logout</a>
+        </div>
+    </aside>
 
-    <div class="container" style="max-width: 800px;">
-        <div class="card">
-            <!-- 1. Page Introduction / Instructions -->
-            <h2 style="margin-bottom: 0.5rem;">Report a New Problem</h2>
-            <div
-                style="background: rgba(74, 144, 226, 0.1); border-left: 4px solid var(--primary-color); padding: 1rem; margin-bottom: 2rem; border-radius: 4px;">
-                <p style="font-size: 0.95rem;">
-                    <strong>Instructions:</strong> Help improve your city by reporting genuine civic issues. Please
-                    provide accurate location details and a clear description.
-                    <br><span style="color: var(--danger-color); font-weight: bold;">Note:</span> False reports reduce
-                    your credibility score.
-                </p>
-            </div>
-
-            <!-- 7. Success / Error Feedback Messages -->
-            <div th:if="${msg}" class="success-alert"
-                style="background: var(--success-color); color: white; padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; text-align: center;">
-                <strong th:text="${msg}">Success Message</strong>
-            </div>
-
-            <form action="#" th:action="@{/report}" th:object="${problem}" method="post">
-
-                <div class="form-group">
-                    <label>Problem Title</label>
-                    <input type="text" th:field="*{title}" class="form-control"
-                        placeholder="E.g., Deep Pothole on Main St" required>
-                </div>
-
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div>
-                        <label>Problem Type</label>
-                        <select th:field="*{type}" class="form-control">
-                            <option value="Pothole">Pothole</option>
-                            <option value="Garbage">Garbage Dump</option>
-                            <option value="Water Leakage">Water Leakage</option>
-                            <option value="Streetlight">Streetlight Issue</option>
-                            <option value="Drainage">Drainage Blockage</option>
-                            <option value="Safety">Public Safety</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <!-- 2. Severity Level Selection -->
-                    <div>
-                        <label>Severity Level</label>
-                        <select th:field="*{severity}" class="form-control" required>
-                            <option value="Low">Low (Minor inconvenience)</option>
-                            <option value="Medium">Medium (Needs attention)</option>
-                            <option value="High">High (Urgent/Dangerous)</option>
-                        </select>
-                        <small style="color: var(--secondary-color);">How urgent is this issue?</small>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>State</label>
-                    <select th:field="*{state}" class="form-control">
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Karnataka">Karnataka</option>
-                        <option value="Tamil Nadu">Tamil Nadu</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div>
-                        <label>City</label>
-                        <input type="text" th:field="*{city}" class="form-control" placeholder="City Name" required>
-                    </div>
-                    <div>
-                        <label>Area / Locality</label>
-                        <input type="text" th:field="*{area}" class="form-control" placeholder="Area Name" required>
-                    </div>
-                </div>
-
-                <!-- 5. Location Confirmation Note -->
+    <main class="main-content">
+        <div class="container" style="max-width: 800px;">
+            <div class="card">
+                <!-- 1. Page Introduction / Instructions -->
+                <h2 style="margin-bottom: 0.5rem;">Report a New Problem</h2>
                 <div
-                    style="background: rgba(241, 196, 15, 0.1); border: 1px dashed var(--warning-color); padding: 0.75rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
-                    <p style="font-size: 0.9rem; color: var(--text-color); margin: 0;">
-                        ⚠️ <strong>Location Note:</strong> Ensure the location is accurate. Community members from this
-                        same area will verify this report.
+                    style="background: rgba(74, 144, 226, 0.1); border-left: 4px solid var(--primary-color); padding: 1rem; margin-bottom: 2rem; border-radius: 4px;">
+                    <p style="font-size: 0.95rem;">
+                        <strong>Instructions:</strong> Help improve your city by reporting genuine civic issues. Please
+                        provide accurate location details and a clear description.
+                        <br><span style="color: var(--danger-color); font-weight: bold;">Note:</span> False reports reduce
+                        your credibility score.
                     </p>
                 </div>
 
-                <div class="form-group">
-                    <label>Detailed Description</label>
-                    <textarea th:field="*{description}" class="form-control" rows="5"
-                        placeholder="Describe the issue in detail, including landmarks if possible..."
-                        required></textarea>
+                <!-- 7. Success / Error Feedback Messages -->
+                <div th:if="${msg}" class="success-alert"
+                    style="background: var(--success-color); color: white; padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; text-align: center;">
+                    <strong th:text="${msg}">Success Message</strong>
                 </div>
 
-                <!-- 4. Photo Upload (Optional / Future Scope) -->
-                <div class="form-group">
-                    <label>Upload Photo (Optional)</label>
-                    <input type="file" class="form-control" accept="image/*" disabled>
-                    <small style="color: var(--secondary-color);">Photo upload will be enabled in future updates
-                        (requires storage setup).</small>
-                </div>
+                <form action="#" th:action="@{/report}" th:object="${problem}" method="post">
 
-                <!-- 6. Terms / Declaration Checkbox -->
-                <div class="form-group"
-                    style="display: flex; gap: 0.75rem; align-items: flex-start; background: var(--bg-color); padding: 1rem; border-radius: var(--radius);">
-                    <input type="checkbox" id="terms" required
-                        style="margin-top: 0.35rem; width: 1.2rem; height: 1.2rem;">
-                    <label for="terms" style="font-weight: normal; font-size: 0.9rem; color: var(--text-color);">
-                        I declare that this is a **genuine** report based on my personal observation. I understand that
-                        repeated false reporting will lead to my account being flagged.
-                    </label>
-                </div>
+                    <div class="form-group">
+                        <label>Problem Title</label>
+                        <input type="text" th:field="*{title}" class="form-control"
+                            placeholder="E.g., Deep Pothole on Main St" required>
+                    </div>
 
-                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button type="submit" class="btn btn-primary" style="flex: 2;">Submit Report</button>
-                    <!-- 9. Auto-Redirect or Next Action (Cancel acts as returning) -->
-                    <a href="/" class="btn"
-                        style="background:var(--secondary-color); color:white; flex: 1; text-align: center;">Cancel</a>
-                </div>
-            </form>
+                    <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label>Problem Type</label>
+                            <select th:field="*{type}" class="form-control">
+                                <option value="Pothole">Pothole</option>
+                                <option value="Garbage">Garbage Dump</option>
+                                <option value="Water Leakage">Water Leakage</option>
+                                <option value="Streetlight">Streetlight Issue</option>
+                                <option value="Drainage">Drainage Blockage</option>
+                                <option value="Safety">Public Safety</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <!-- 2. Severity Level Selection -->
+                        <div>
+                            <label>Severity Level</label>
+                            <select th:field="*{severity}" class="form-control" required>
+                                <option value="Low">Low (Minor inconvenience)</option>
+                                <option value="Medium">Medium (Needs attention)</option>
+                                <option value="High">High (Urgent/Dangerous)</option>
+                            </select>
+                            <small style="color: var(--secondary-color);">How urgent is this issue?</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>State</label>
+                        <select th:field="*{state}" class="form-control">
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label>City</label>
+                            <input type="text" th:field="*{city}" class="form-control" placeholder="City Name" required>
+                        </div>
+                        <div>
+                            <label>Area / Locality</label>
+                            <input type="text" th:field="*{area}" class="form-control" placeholder="Area Name" required>
+                        </div>
+                    </div>
+
+                    <!-- 5. Location Confirmation Note -->
+                    <div
+                        style="background: rgba(241, 196, 15, 0.1); border: 1px dashed var(--warning-color); padding: 0.75rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
+                        <p style="font-size: 0.9rem; color: var(--text-color); margin: 0;">
+                            ⚠️ <strong>Location Note:</strong> Ensure the location is accurate. Community members from this
+                            same area will verify this report.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Detailed Description</label>
+                        <textarea th:field="*{description}" class="form-control" rows="5"
+                            placeholder="Describe the issue in detail, including landmarks if possible..."
+                            required></textarea>
+                    </div>
+
+                    <!-- 4. Photo Upload (Optional / Future Scope) -->
+                    <div class="form-group">
+                        <label>Upload Photo (Optional)</label>
+                        <input type="file" class="form-control" accept="image/*" disabled>
+                        <small style="color: var(--secondary-color);">Photo upload will be enabled in future updates
+                            (requires storage setup).</small>
+                    </div>
+
+                    <!-- 6. Terms / Declaration Checkbox -->
+                    <div class="form-group"
+                        style="display: flex; gap: 0.75rem; align-items: flex-start; background: var(--bg-color); padding: 1rem; border-radius: var(--radius);">
+                        <input type="checkbox" id="terms" required
+                            style="margin-top: 0.35rem; width: 1.2rem; height: 1.2rem;">
+                        <label for="terms" style="font-weight: normal; font-size: 0.9rem; color: var(--text-color);">
+                            I declare that this is a **genuine** report based on my personal observation. I understand that
+                            repeated false reporting will lead to my account being flagged.
+                        </label>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary" style="flex: 2;">Submit Report</button>
+                        <!-- 9. Auto-Redirect or Next Action (Cancel acts as returning) -->
+                        <a href="/" class="btn"
+                            style="background:var(--secondary-color); color:white; flex: 1; text-align: center;">Cancel</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 10. Help / Support Section -->
+            <div
+                style="margin-top: 2rem; padding: 1.5rem; background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow);">
+                <h4>Help & Guidelines</h4>
+                <ul style="margin-top: 1rem; font-size: 0.9rem; padding-left: 1.2rem;">
+                    <li>Report issues that affect the public, not private property disputes.</li>
+                    <li>Be specific about the location so verifyers can find it.</li>
+                    <li>Choose the correct severity to help authorities prioritize.</li>
+                    <li>Check the <strong>Dashboard</strong> after submitting to see real-time updates.</li>
+                </ul>
+            </div>
         </div>
-
-        <!-- 10. Help / Support Section -->
-        <div
-            style="margin-top: 2rem; padding: 1.5rem; background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow);">
-            <h4>Help & Guidelines</h4>
-            <ul style="margin-top: 1rem; font-size: 0.9rem; padding-left: 1.2rem;">
-                <li>Report issues that affect the public, not private property disputes.</li>
-                <li>Be specific about the location so verifyers can find it.</li>
-                <li>Choose the correct severity to help authorities prioritize.</li>
-                <li>Check the <strong>Dashboard</strong> after submitting to see real-time updates.</li>
-            </ul>
-        </div>
-    </div>
+    </main>
+</div>
 
     <script th:src="@{/js/script.js}"></script>
 </body>
