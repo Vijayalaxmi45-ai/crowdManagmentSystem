@@ -35,9 +35,9 @@
             <a href="/dashboard" class="sidebar-link active"><span>📊</span> Dashboard</a>
             <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
             <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
-            <a href="/verify" class="sidebar-link"><span>✓</span> Verify</a>
+            <a href="/verify" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>✓</span> Verify</a>
             <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
-            <a href="/qr-entry" class="sidebar-link"><span>🔲</span> QR Entry</a>
+            <a href="/qr-entry" class="sidebar-link" th:if="${isStaff or isAdmin}"><span>🔲</span> QR Entry</a>
             <a href="/admin" class="sidebar-link" th:if="${isAdmin}"><span>🛠️</span> Admin Panel</a>
         </div>
             <a href="/profile" class="sidebar-link"><span>👤</span> Profile</a>
@@ -79,21 +79,21 @@
                     <div class="stat-label">Total Complaints</div>
                     <div class="stat-number" id="totalComplaints" th:text="${totalProblems}">0</div>
                 </div>
-                <div class="stat-card" style="border-top: 4px solid var(--danger-color);">
-                    <div class="stat-label">Active Issues</div>
-                    <div class="stat-number" style="color: var(--danger-color);" id="activeIssues" th:text="${highPriorityCount}">0</div>
+                <div class="stat-card" style="border-top: 4px solid var(--warning-color);">
+                    <div class="stat-label">Pending Verification</div>
+                    <div class="stat-number" style="color: var(--warning-color);" th:text="${pendingCount}">0</div>
+                </div>
+                <div class="stat-card" style="border-top: 4px solid #8b5cf6;">
+                    <div class="stat-label">Verified Issues</div>
+                    <div class="stat-number" style="color: #8b5cf6;" th:text="${verifiedCount}">0</div>
                 </div>
                 <div class="stat-card" style="border-top: 4px solid var(--success-color);">
                     <div class="stat-label">Resolved Issues</div>
                     <div class="stat-number" style="color: var(--success-color);" id="resolvedIssues" th:text="${resolvedCount}">0</div>
                 </div>
-                <div class="stat-card" style="border-top: 4px solid var(--warning-color);">
-                    <div class="stat-label">Pending Approval</div>
-                    <div class="stat-number" style="color: var(--warning-color);" id="pendingApproval">5</div>
-                </div>
-                <div class="stat-card" style="border-top: 4px solid #9b59b6;">
-                    <div class="stat-label">Avg Crowd Density</div>
-                    <div class="stat-number" style="color: #9b59b6;">78%</div>
+                <div class="stat-card" style="border-top: 4px solid var(--accent-color);">
+                    <div class="stat-label">Approved & Assigned</div>
+                    <div class="stat-number" style="color: var(--accent-color);" th:text="${approvedCount}">0</div>
                 </div>
             </div>
 

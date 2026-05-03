@@ -137,8 +137,12 @@
 
                 <form id="loginForm" action="/login" method="POST" th:action="@{/login}">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Username (admin / user / staff)" required autocomplete="username">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Username (admin / user / staff)" required autocomplete="username" oninput="checkAdmin()">
                     <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                    
+                    <div id="adminKeySection" style="display: none; animation: fadeIn 0.3s ease;">
+                        <input type="password" id="secretKey" name="secretKey" class="form-control" placeholder="Admin Secret Key" style="border-color: var(--accent-color); background: rgba(255,107,107,0.05);">
+                    </div>
 
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-size: 0.9rem;">
                         <label style="color: var(--secondary-color); display: flex; align-items: center; gap: 0.5rem;">
@@ -189,6 +193,21 @@
         function fillCreds(u, p) {
             document.getElementById('username').value = u;
             document.getElementById('password').value = p;
+            checkAdmin();
+        }
+
+        function checkAdmin() {
+            const username = document.getElementById('username').value.toLowerCase();
+            const adminSection = document.getElementById('adminKeySection');
+            const secretKeyInput = document.getElementById('secretKey');
+            
+            if (username === 'admin') {
+                adminSection.style.display = 'block';
+                secretKeyInput.required = true;
+            } else {
+                adminSection.style.display = 'none';
+                secretKeyInput.required = false;
+            }
         }
     </script>
 </body>

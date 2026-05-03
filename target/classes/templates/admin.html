@@ -4,41 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Crowd Mapper</title>    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🗺️</text></svg>" type="image/svg+xml">    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Admin - CrowdMapper</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🛡️</text></svg>" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            font-size: 0.9rem;
-        }
-
-        th,
-        td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--secondary-color);
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .action-form {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
+        .table-container { background: var(--card-bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        th { background: var(--primary-color); color: white; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        tr:hover { background: rgba(74, 144, 226, 0.02); }
+        .action-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .badge-status { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .status-pending { background: rgba(241, 196, 15, 0.15); color: #d4a017; }
+        .status-verified { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+        .status-approved { background: rgba(74, 144, 226, 0.15); color: var(--primary-color); }
+        .status-resolved { background: rgba(46, 204, 113, 0.15); color: var(--success-color); }
+        .status-rejected { background: rgba(231, 76, 60, 0.15); color: var(--danger-color); }
     </style>
 </head>
 
 <body>
 <div class="layout-wrapper">
-    <!-- Modern Left Side Navigation Bar -->
     <aside class="sidebar">
         <a href="/" class="logo">CrowdMapper</a>
         <div class="sidebar-nav">
@@ -61,91 +47,85 @@
     </aside>
 
     <main class="main-content">
-        <div class="container" style="max-width: 1200px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                <h2 style="font-size: 2rem; color: var(--primary-color);">Admin Management Panel</h2>
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                    <span
-                        style="background: var(--card-bg); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; box-shadow: var(--shadow);">
-                        Logged in as: <strong th:text="${loggedInUser != null ? loggedInUser : 'Admin'}">Admin</strong>
-                    </span>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem;">
+                <div>
+                    <h1 style="font-size: 2.2rem; color: var(--primary-color);">🛠️ Authority Command Center</h1>
+                    <p style="color: var(--secondary-color);">Review, Approve, and Assign community-reported issues.</p>
+                </div>
+                <div class="stats-mini" style="display: flex; gap: 1.5rem;">
+                    <div style="text-align: right;"><div style="font-size: 1.5rem; font-weight: 800;" th:text="${pendingCount}">0</div><div style="font-size: 0.75rem; color: var(--secondary-color);">PENDING</div></div>
+                    <div style="text-align: right;"><div style="font-size: 1.5rem; font-weight: 800; color: var(--success-color);" th:text="${resolvedCount}">0</div><div style="font-size: 0.75rem; color: var(--secondary-color);">RESOLVED</div></div>
                 </div>
             </div>
 
-            <!-- Admin Summary -->
-            <div class="stats-grid" style="margin-bottom: 2rem;">
-                <div class="stat-card" style="padding: 1.5rem; border-top: 4px solid var(--primary-color);">
-                    <div class="stat-number" style="font-size: 2rem;" th:text="${totalProblems}">0</div>
-                    <div class="stat-label">Total Reports</div>
-                </div>
-                <div class="stat-card" style="padding: 1.5rem; border-top: 4px solid var(--danger-color);">
-                    <div class="stat-number" style="font-size: 2rem; color: var(--danger-color);"
-                        th:text="${highPriorityCount}">0</div>
-                    <div class="stat-label">High Priority Issues</div>
-                </div>
-                <div class="stat-card" style="padding: 1.5rem; border-top: 4px solid var(--success-color);">
-                    <div class="stat-number" style="font-size: 2rem; color: var(--success-color);"
-                        th:text="${resolvedCount}">0</div>
-                    <div class="stat-label">Cases Resolved</div>
-                </div>
-            </div>
-
-            <div class="table-responsive">
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Problem Info</th>
+                            <th>Issue Detail</th>
                             <th>Location</th>
-                            <th>Severity</th>
-                            <th>Score</th>
                             <th>Status</th>
-                            <th>Update Status</th>
-                            <th>Actions</th>
+                            <th>Workflow Actions</th>
+                            <th>Controls</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="p : ${problems}" style="border-bottom: 1px solid rgba(0,0,0,0.05);">
-                            <td th:text="${p.id}">1</td>
+                        <tr th:each="p : ${problems}">
+                            <td th:text="${p.id}" style="font-weight: 700; color: var(--secondary-color);">#1</td>
                             <td>
-                                <strong th:text="${p.title}">Title</strong><br>
-                                <small th:text="${p.type}" style="color: var(--secondary-color);"></small>
+                                <div style="font-weight: 700;" th:text="${p.title}">Pothole Repair</div>
+                                <div style="font-size: 0.8rem; color: var(--secondary-color);" th:text="${p.type}">Infrastructure</div>
                             </td>
                             <td>
-                                <span th:text="${p.city}">City</span><br>
-                                <small th:text="${p.area}" style="color: var(--secondary-color);"></small>
+                                <div th:text="${p.city}">Pune</div>
+                                <div style="font-size: 0.8rem; color: var(--secondary-color);" th:text="${p.area}">MG Road</div>
                             </td>
                             <td>
-                                <span class="status-badge" th:text="${p.severity}"
-                                    th:classappend="${p.severity == 'High' ? 'priority-high' : (p.severity == 'Medium' ? 'priority-medium' : 'priority-low')}"
-                                    style="color:white; text-shadow: 1px 1px 0 rgba(0,0,0,0.2);">
-                                    High
-                                </span>
-                            </td>
-                            <td th:text="${p.priority}">0</td>
-                            <td>
-                                <span class="status-badge" th:text="${p.status}"
-                                    th:classappend="${p.status == 'Resolved' ? 'status-resolved' : 'status-open'}">
-                                    Open
-                                </span>
+                                <span class="badge-status" 
+                                      th:classappend="'status-' + ${p.status.toLowerCase()}"
+                                      th:text="${p.status}">PENDING</span>
                             </td>
                             <td>
-                                <form th:action="@{/admin/updateStatus/{id}(id=${p.id})}" method="post" class="action-form">
-                                    <select name="status" class="form-control" style="padding: 0.25rem; font-size: 0.8rem;">
-                                        <option value="Open" th:selected="${p.status == 'Open'}">Open</option>
-                                        <option value="In Progress" th:selected="${p.status == 'In Progress'}">In Progress
-                                        </option>
-                                        <option value="Resolved" th:selected="${p.status == 'Resolved'}">Resolved</option>
-                                        <option value="Rejected" th:selected="${p.status == 'Rejected'}">Rejected</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-primary"
-                                        style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Update</button>
-                                </form>
+                                <!-- Admin Approval (If Verified by Staff) -->
+                                <div th:if="${p.status == 'VERIFIED'}" class="action-btns">
+                                    <form th:action="@{/admin/approve/{id}(id=${p.id})}" method="post">
+                                        <input type="hidden" name="isApproved" value="true">
+                                        <button type="submit" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">✅ Approve</button>
+                                    </form>
+                                    <form th:action="@{/admin/approve/{id}(id=${p.id})}" method="post">
+                                        <input type="hidden" name="isApproved" value="false">
+                                        <button type="submit" class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">❌ Reject</button>
+                                    </form>
+                                </div>
+
+                                <!-- Admin Assignment (If Approved) -->
+                                <div th:if="${p.status == 'APPROVED'}" class="action-btns">
+                                    <form th:action="@{/admin/assign/{id}(id=${p.id})}" method="post" style="display:flex; gap:0.3rem;">
+                                        <select name="staffId" class="form-control" style="padding: 0.3rem; font-size: 0.75rem; width: 100px;">
+                                            <option value="1">Verifier 1</option>
+                                            <option value="2">Verifier 2</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">Assign Staff</button>
+                                    </form>
+                                </div>
+
+                                <!-- Resolution -->
+                                <div th:if="${p.status == 'APPROVED'}" style="margin-top:0.5rem;">
+                                    <form th:action="@{/admin/resolve/{id}(id=${p.id})}" method="post">
+                                        <button type="submit" class="btn btn-success" style="width: 100%; padding: 0.4rem; font-size: 0.7rem;">Mark as RESOLVED</button>
+                                    </form>
+                                </div>
+
+                                <span th:if="${p.status == 'PENDING'}" style="font-size: 0.75rem; font-style: italic; color: var(--secondary-color);">Waiting for Staff Verification...</span>
+                                <span th:if="${p.status == 'REJECTED'}" style="color: var(--danger-color); font-weight: 700;">REJECTED</span>
+                                <span th:if="${p.status == 'RESOLVED'}" style="color: var(--success-color); font-weight: 700;">COMPLETED ✅</span>
                             </td>
                             <td>
-                                <a th:href="@{/admin/delete/{id}(id=${p.id})}" class="btn btn-danger"
-                                    style="padding: 0.25rem 0.75rem; font-size: 0.8rem;"
-                                    onclick="return confirm('Delete this record permanantly?')">Delete</a>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <a th:href="@{/admin/delete/{id}(id=${p.id})}" class="btn" style="background: rgba(231, 76, 60, 0.1); color: var(--danger-color); padding: 0.4rem;" onclick="return confirm('Delete permanently?')">🗑️</a>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -154,8 +134,6 @@
         </div>
     </main>
 </div>
-
-    <script th:src="@{/js/script.js}"></script>
+<script th:src="@{/js/script.js}"></script>
 </body>
-
 </html>

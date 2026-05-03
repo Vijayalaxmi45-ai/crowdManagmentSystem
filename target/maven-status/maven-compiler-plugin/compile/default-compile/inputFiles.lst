@@ -7,6 +7,7 @@ C:\Users\HP\.gemini\antigravity\scratch\src\main\java\com\crowd\mapper\controlle
 C:\Users\HP\.gemini\antigravity\scratch\src\main\java\com\crowd\mapper\model\Problem.java
 C:\Users\HP\.gemini\antigravity\scratch\src\main\java\com\crowd\mapper\config\WebSocketConfig.java
 C:\Users\HP\.gemini\antigravity\scratch\src\main\java\com\crowd\mapper\service\ProblemService.java
+C:\Users\HP\.gemini\antigravity\scratch\src\main\java\com\crowd\mapper\config\CustomAuthenticationProvider.java
 C:\Users\HP\.gemini\antigravity\scratch\src\main\java\com\crowd\mapper\repository\ProblemRepository.java
 C:\Users\HP\.gemini\antigravity\scratch\src\main\java\com\crowd\mapper\controller\ProblemController.java
 C:\Users\HP\.gemini\antigravity\scratch\src\main\java\com\crowd\mapper\CrowdMapperApplication.java

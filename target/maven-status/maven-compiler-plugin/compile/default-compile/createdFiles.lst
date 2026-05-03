@@ -4,6 +4,7 @@ com\crowd\mapper\model\Problem.class
 com\crowd\mapper\model\User$Role.class
 com\crowd\mapper\repository\CrowdLocationRepository.class
 com\crowd\mapper\service\ProblemService.class
+com\crowd\mapper\config\CustomAuthenticationProvider.class
 com\crowd\mapper\model\CrowdLocation.class
 com\crowd\mapper\model\User.class
 com\crowd\mapper\service\CrowdService.class
