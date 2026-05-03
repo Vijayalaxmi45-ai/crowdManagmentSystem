@@ -7,21 +7,98 @@
 </head>
 
 <body>
-    <nav>
+<div class="layout-wrapper">
+    <!-- Modern Left Side Navigation Bar -->
+    <aside class="sidebar">
         <a href="/" class="logo">CrowdMapper</a>
-        <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/report">Report Problem</a>
-            <a href="/verify">Verify</a>
-            <a href="/dashboard">Dashboard</a>
-            <a href="/admin">Admin</a>
-            <button id="theme-toggle" class="theme-toggle">🌙</button>
+        <div class="sidebar-nav">
+            <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
+            <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
+            <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
+            <a href="/verify" class="sidebar-link"><span>✓</span> Verify</a>
+            <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
+            <a href="/qr-entry" class="sidebar-link"><span>🔲</span> QR Entry</a>
+            <a href="/notifications" class="sidebar-link"><span>🔔</span> Notifications</a>
+            <a href="/admin" class="sidebar-link" th:if="${isAdmin}"><span>🛠️</span> Admin Panel</a>
         </div>
-    </nav>
-    <div class="container">
-        <h1>Contact Us</h1>
-        <p>Email us at support@crowdmapper.com for feedback.</p>
-    </div>
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="/profile" class="sidebar-link"><span>👤</span> Profile</a>
+            <a href="/about" class="sidebar-link"><span>ℹ️</span> About Us</a>
+            <a href="/contact" class="sidebar-link active"><span>📧</span> Contact</a>
+            <button id="theme-toggle" class="sidebar-link" style="width:100%; border:none; cursor:pointer; background:transparent; font-size:1rem; text-align:left;"><span>🌙</span> Dark Mode</button>
+            <a href="/logout" class="sidebar-link" style="color: var(--danger-color);"><span>🚪</span> Logout</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="container" style="max-width: 900px;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h1 style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem;">📧 Get In Touch</h1>
+                <p style="color: var(--secondary-color); font-size: 1.1rem;">We're here to help you build a better community. Reach out for support or feedback.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <div class="card" style="padding: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);">Send us a Message</h3>
+                    <form action="#" method="post">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" class="form-control" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" class="form-control" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <select class="form-control">
+                                <option>General Inquiry</option>
+                                <option>Technical Support</option>
+                                <option>Partnership Request</option>
+                                <option>Report Abuse</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea class="form-control" rows="4" placeholder="How can we help you?" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Send Message</button>
+                    </form>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--accent-color);">
+                        <h4 style="margin-bottom: 0.5rem;">📍 Location</h4>
+                        <p style="font-size: 0.95rem; color: var(--secondary-color);">
+                            123 Civic Plaza, Tech Corridor<br>
+                            Pune, Maharashtra 411001
+                        </p>
+                    </div>
+                    <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--success-color);">
+                        <h4 style="margin-bottom: 0.5rem;">📧 Email Support</h4>
+                        <p style="font-size: 0.95rem; color: var(--secondary-color);">
+                            General: support@crowdmapper.com<br>
+                            Press: media@crowdmapper.com
+                        </p>
+                    </div>
+                    <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--primary-color);">
+                        <h4 style="margin-bottom: 0.5rem;">📞 Call Us</h4>
+                        <p style="font-size: 0.95rem; color: var(--secondary-color);">
+                            Toll Free: 1800-CROWD-MAP<br>
+                            Office: +91 20 2345 6789
+                        </p>
+                    </div>
+                    <div style="margin-top: auto; padding: 1.5rem; background: rgba(74, 144, 226, 0.1); border-radius: 12px; text-align: center;">
+                        <p style="font-weight: 600; color: var(--primary-color);">Follow our journey</p>
+                        <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; font-size: 1.5rem;">
+                            <span>🐦</span> <span>📸</span> <span>💼</span> <span>💻</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
     <script th:src="@{/js/script.js}"></script>
 </body>
 

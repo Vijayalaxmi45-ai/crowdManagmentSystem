@@ -149,4 +149,11 @@ public class ProblemController {
     public String contactPage() {
         return "contact";
     }
+
+    // 8. Notifications Page
+    @GetMapping("/notifications")
+    public String notificationsPage(Model model, HttpServletRequest request) {
+        addLocaleToModel(model, request);
+        return "notifications";
+    }
 }

@@ -10,175 +10,187 @@
 </head>
 
 <body>
-
-    <nav>
+<div class="layout-wrapper">
+    <!-- Modern Left Side Navigation Bar -->
+    <aside class="sidebar">
         <a href="/" class="logo">CrowdMapper</a>
-        <div class="nav-links">
-            <a href="/" th:text="#{nav.home}">Home</a>
-            <a href="/report" th:text="#{nav.report}">Report Problem</a>
-            <a href="/verify" th:text="#{nav.verify}">Verify</a>
-            <a href="/dashboard" th:text="#{nav.dashboard}">Dashboard</a>
-            <a href="/admin" th:text="#{nav.admin}">Admin</a>
-            <button id="theme-toggle" class="theme-toggle">🌙</button>
-            <a href="/login" style="background: linear-gradient(135deg, var(--primary-color), #8b5cf6); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none;">🔐 Login</a>
+        <div class="sidebar-nav">
+            <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
+            <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
+            <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
+            <a href="/verify" class="sidebar-link active"><span>✓</span> Verify</a>
+            <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
+            <a href="/qr-entry" class="sidebar-link"><span>🔲</span> QR Entry</a>
+            <a href="/notifications" class="sidebar-link"><span>🔔</span> Notifications</a>
+            <a href="/admin" class="sidebar-link" th:if="${isAdmin}"><span>🛠️</span> Admin Panel</a>
         </div>
-    </nav>
-
-    <div class="container">
-        <div style="margin-bottom: 3rem;">
-            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--primary-color);">✅ Community Verification Portal</h1>
-            <p style="font-size: 1.1rem; color: var(--secondary-color);">Your votes power our system. Help validate civic issues and prioritize genuine concerns that matter to your community.</p>
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="/profile" class="sidebar-link"><span>👤</span> Profile</a>
+            <a href="/about" class="sidebar-link"><span>ℹ️</span> About Us</a>
+            <a href="/contact" class="sidebar-link"><span>📧</span> Contact</a>
+            <button id="theme-toggle" class="sidebar-link" style="width:100%; border:none; cursor:pointer; background:transparent; font-size:1rem; text-align:left;"><span>🌙</span> Dark Mode</button>
+            <a href="/logout" class="sidebar-link" style="color: var(--danger-color);"><span>🚪</span> Logout</a>
         </div>
+    </aside>
 
-        <!-- Why Verification Matters -->
-        <div style="background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(46, 204, 113, 0.1)); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; border: 1px solid rgba(74, 144, 226, 0.2);">
-            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">🎯 Why Your Verification Matters</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
-                <div>
-                    <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">🎲 Eliminate False Reports</h4>
-                    <p style="font-size: 0.9rem; color: var(--secondary-color);">Spam and fake reports get filtered out naturally when community consensus votes them down.</p>
-                </div>
-                <div>
-                    <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">⚡ Accelerate Solutions</h4>
-                    <p style="font-size: 0.9rem; color: var(--secondary-color);">Every confirmation increases a problem's priority score, getting it noticed and resolved faster.</p>
-                </div>
-                <div>
-                    <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">👥 Strengthen Democracy</h4>
-                    <p style="font-size: 0.9rem; color: var(--secondary-color);">Direct citizen participation in governance ensures authorities respond to real community needs.</p>
-                </div>
+    <main class="main-content">
+        <div class="container">
+            <div style="margin-bottom: 3rem;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--primary-color);">✅ Community Verification Portal</h1>
+                <p style="font-size: 1.1rem; color: var(--secondary-color);">Your votes power our system. Help validate civic issues and prioritize genuine concerns that matter to your community.</p>
             </div>
-        </div>
 
-        <!-- Verification Guidelines -->
-        <div class="info-box" style="background: linear-gradient(90deg, rgba(187, 134, 252, 0.15), rgba(52, 211, 153, 0.15)); padding: 1.5rem; border-left: 4px solid var(--primary-color); margin: 2rem 0; box-shadow: var(--shadow); border-radius: var(--radius);">
-            <h4 style="color: var(--primary-color); margin-bottom: 0.8rem;">📋 Verification Guidelines</h4>
-            <ul style="margin-left: 1rem; line-height: 1.8; font-size: 0.95rem;">
-                <li><strong>✅ Confirm if:</strong> You've personally witnessed this problem OR know it exists from reliable local sources</li>
-                <li><strong>❌ Reject if:</strong> The problem seems exaggerated, false, or you have evidence it doesn't exist</li>
-                <li><strong>⚖️ Stay Fair:</strong> False verifications damage system integrity. Only vote based on truth.</li>
-                <li><strong>🔒 Your Vote Counts:</strong> Your verification directly affects priority scores and resource allocation</li>
-            </ul>
-        </div>
-
-        <!-- Verification Statistics -->
-        <div style="background: var(--card-bg); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; box-shadow: var(--shadow); border: 1px solid rgba(74, 144, 226, 0.1);">
-            <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);">📊 Verification Impact This Week</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(187, 134, 252, 0.1)); border-radius: 8px;">
-                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary-color);">12+</div>
-                    <small>Total Verifications</small>
-                </div>
-                <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 211, 153, 0.1)); border-radius: 8px;">
-                    <div style="font-size: 2rem; font-weight: bold; color: var(--success-color);">5</div>
-                    <small>Issues Prioritized</small>
-                </div>
-                <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(207, 102, 121, 0.1)); border-radius: 8px;">
-                    <div style="font-size: 2rem; font-weight: bold; color: var(--danger-color);">2</div>
-                    <small>Spam Filtered</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filters -->
-        <div class="filter-bar" style="margin-bottom: 2rem;">
-            <select class="form-control" style="width: auto; padding: 0.7rem;">
-                <option>Sort by: Highest Priority</option>
-                <option>Sort by: Most Recent</option>
-                <option>Sort by: Most Verified</option>
-            </select>
-            <select class="form-control" style="width: auto; padding: 0.7rem;">
-                <option>Filter by City</option>
-                <option>Mumbai</option>
-                <option>Pune</option>
-                <option>Delhi</option>
-            </select>
-            <select class="form-control" style="width: auto; padding: 0.7rem;">
-                <option>Filter by Type</option>
-                <option>Potholes</option>
-                <option>Garbage</option>
-                <option>Water Leakage</option>
-            </select>
-        </div>
-
-        <!-- Verification Cards -->
-        <div class="card-grid" style="margin-bottom: 3rem;">
-            <div class="card" th:each="p : ${problems}" th:if="${p.status == 'Open'}" style="border: 2px solid rgba(74, 144, 226, 0.2);">
-                <div class="problem-header">
-                    <span class="priority-badge"
-                        th:text="${p.priority > 8 ? 'High Priority' : (p.priority > 3 ? 'Medium Priority' : 'Low Priority')}"
-                        th:classappend="${p.priority > 8 ? 'priority-high' : (p.priority > 3 ? 'priority-medium' : 'priority-low')}">
-                    </span>
-                    <small style="opacity: 0.7;" th:text="${#temporals.format(p.createdAt, 'dd-MMM-yyyy')}">Date</small>
-                </div>
-
-                <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;" th:text="${p.title}">Title</h3>
-
-                <div class="problem-meta" style="margin-bottom: 1rem;">
-                    <span style="font-weight: 600; color: var(--primary-color);" th:text="${p.type}">Type</span>
-                    <span style="color: var(--secondary-color);">|</span>
-                    <span th:text="${p.city} + ', ' + ${p.area}">Location</span>
-                </div>
-
-                <p th:text="${p.description}" style="margin-bottom: 1rem; line-height: 1.6; color: var(--text-color);">Description</p>
-
-                <div style="background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(187, 134, 252, 0.1)); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid var(--primary-color);">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                        <div>
-                            <strong style="color: var(--primary-color);">Priority Score:</strong>
-                            <span style="font-size: 1.3rem; font-weight: bold; color: var(--primary-color);" th:text="${p.priority}">0</span>
-                        </div>
-                        <div>
-                            <strong style="color: var(--secondary-color);">Status:</strong>
-                            <span style="font-weight: bold; color: var(--success-color);" th:text="${p.status}">Open</span>
-                        </div>
+            <!-- Why Verification Matters -->
+            <div style="background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(46, 204, 113, 0.1)); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; border: 1px solid rgba(74, 144, 226, 0.2);">
+                <h3 style="color: var(--primary-color); margin-bottom: 1rem;">🎯 Why Your Verification Matters</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                    <div>
+                        <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">🎲 Eliminate False Reports</h4>
+                        <p style="font-size: 0.9rem; color: var(--secondary-color);">Spam and fake reports get filtered out naturally when community consensus votes them down.</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">⚡ Accelerate Solutions</h4>
+                        <p style="font-size: 0.9rem; color: var(--secondary-color);">Every confirmation increases a problem's priority score, getting it noticed and resolved faster.</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">👥 Strengthen Democracy</h4>
+                        <p style="font-size: 0.9rem; color: var(--secondary-color);">Direct citizen participation in governance ensures authorities respond to real community needs.</p>
                     </div>
                 </div>
+            </div>
 
-                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem; background: var(--bg-color); padding: 0.8rem; border-radius: 6px;">
-                    <span style="color: var(--success-color); font-weight: 600;">👍 <span th:text="${p.confirms}">0</span> Confirmed</span>
-                    <span style="color: var(--danger-color); font-weight: 600;">👎 <span th:text="${p.rejects}">0</span> Rejected</span>
+            <!-- Verification Guidelines -->
+            <div class="info-box" style="background: linear-gradient(90deg, rgba(187, 134, 252, 0.15), rgba(52, 211, 153, 0.15)); padding: 1.5rem; border-left: 4px solid var(--primary-color); margin: 2rem 0; box-shadow: var(--shadow); border-radius: var(--radius);">
+                <h4 style="color: var(--primary-color); margin-bottom: 0.8rem;">📋 Verification Guidelines</h4>
+                <ul style="margin-left: 1rem; line-height: 1.8; font-size: 0.95rem;">
+                    <li><strong>✅ Confirm if:</strong> You've personally witnessed this problem OR know it exists from reliable local sources</li>
+                    <li><strong>❌ Reject if:</strong> The problem seems exaggerated, false, or you have evidence it doesn't exist</li>
+                    <li><strong>⚖️ Stay Fair:</strong> False verifications damage system integrity. Only vote based on truth.</li>
+                    <li><strong>🔒 Your Vote Counts:</strong> Your verification directly affects priority scores and resource allocation</li>
+                </ul>
+            </div>
+
+            <!-- Verification Statistics -->
+            <div style="background: var(--card-bg); padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; box-shadow: var(--shadow); border: 1px solid rgba(74, 144, 226, 0.1);">
+                <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);">📊 Verification Impact This Week</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(187, 134, 252, 0.1)); border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--primary-color);">12+</div>
+                        <small>Total Verifications</small>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 211, 153, 0.1)); border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--success-color);">5</div>
+                        <small>Issues Prioritized</small>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(207, 102, 121, 0.1)); border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--danger-color);">2</div>
+                        <small>Spam Filtered</small>
+                    </div>
                 </div>
+            </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 1rem;">
-                    <form th:action="@{/verify/{id}(id=${p.id})}" method="post" style="margin: 0;">
-                        <input type="hidden" name="action" value="confirm">
-                        <button type="submit" class="btn btn-success" style="width: 100%; padding: 0.8rem; font-weight: 600;"
-                            onclick="return confirm('Confirm: This problem actually exists?')">
-                            👍 Yes, It Exists
-                        </button>
-                    </form>
+            <!-- Filters -->
+            <div class="filter-bar" style="margin-bottom: 2rem;">
+                <select class="form-control" style="width: auto; padding: 0.7rem;">
+                    <option>Sort by: Highest Priority</option>
+                    <option>Sort by: Most Recent</option>
+                    <option>Sort by: Most Verified</option>
+                </select>
+                <select class="form-control" style="width: auto; padding: 0.7rem;">
+                    <option>Filter by City</option>
+                    <option>Mumbai</option>
+                    <option>Pune</option>
+                    <option>Delhi</option>
+                </select>
+                <select class="form-control" style="width: auto; padding: 0.7rem;">
+                    <option>Filter by Type</option>
+                    <option>Potholes</option>
+                    <option>Garbage</option>
+                    <option>Water Leakage</option>
+                </select>
+            </div>
 
-                    <form th:action="@{/verify/{id}(id=${p.id})}" method="post" style="margin: 0;">
-                        <input type="hidden" name="action" value="reject">
-                        <button type="submit" class="btn btn-danger" style="width: 100%; padding: 0.8rem; font-weight: 600;"
-                            onclick="return confirm('Reject: This problem does NOT exist?')">
-                            👎 No, Not Real
-                        </button>
-                    </form>
+            <!-- Verification Cards -->
+            <div class="card-grid" style="margin-bottom: 3rem;">
+                <div class="card" th:each="p : ${problems}" th:if="${p.status == 'Open'}" style="border: 2px solid rgba(74, 144, 226, 0.2);">
+                    <div class="problem-header">
+                        <span class="priority-badge"
+                            th:text="${p.priority > 8 ? 'High Priority' : (p.priority > 3 ? 'Medium Priority' : 'Low Priority')}"
+                            th:classappend="${p.priority > 8 ? 'priority-high' : (p.priority > 3 ? 'priority-medium' : 'priority-low')}">
+                        </span>
+                        <small style="opacity: 0.7;" th:text="${#temporals.format(p.createdAt, 'dd-MMM-yyyy')}">Date</small>
+                    </div>
+
+                    <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;" th:text="${p.title}">Title</h3>
+
+                    <div class="problem-meta" style="margin-bottom: 1rem;">
+                        <span style="font-weight: 600; color: var(--primary-color);" th:text="${p.type}">Type</span>
+                        <span style="color: var(--secondary-color);">|</span>
+                        <span th:text="${p.city} + ', ' + ${p.area}">Location</span>
+                    </div>
+
+                    <p th:text="${p.description}" style="margin-bottom: 1rem; line-height: 1.6; color: var(--text-color);">Description</p>
+
+                    <div style="background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(187, 134, 252, 0.1)); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid var(--primary-color);">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                            <div>
+                                <strong style="color: var(--primary-color);">Priority Score:</strong>
+                                <span style="font-size: 1.3rem; font-weight: bold; color: var(--primary-color);" th:text="${p.priority}">0</span>
+                            </div>
+                            <div>
+                                <strong style="color: var(--secondary-color);">Status:</strong>
+                                <span style="font-weight: bold; color: var(--success-color);" th:text="${p.status}">Open</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem; background: var(--bg-color); padding: 0.8rem; border-radius: 6px;">
+                        <span style="color: var(--success-color); font-weight: 600;">👍 <span th:text="${p.confirms}">0</span> Confirmed</span>
+                        <span style="color: var(--danger-color); font-weight: 600;">👎 <span th:text="${p.rejects}">0</span> Rejected</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 1rem;">
+                        <form th:action="@{/verify/{id}(id=${p.id})}" method="post" style="margin: 0;">
+                            <input type="hidden" name="action" value="confirm">
+                            <button type="submit" class="btn btn-success" style="width: 100%; padding: 0.8rem; font-weight: 600;"
+                                onclick="return confirm('Confirm: This problem actually exists?')">
+                                👍 Yes, It Exists
+                            </button>
+                        </form>
+
+                        <form th:action="@{/verify/{id}(id=${p.id})}" method="post" style="margin: 0;">
+                            <input type="hidden" name="action" value="reject">
+                            <button type="submit" class="btn btn-danger" style="width: 100%; padding: 0.8rem; font-weight: 600;"
+                                onclick="return confirm('Reject: This problem does NOT exist?')">
+                                👎 No, Not Real
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Empty State -->
-        <div th:if="${problems.empty}" style="text-align: center; padding: 4rem; background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 3rem;">
-            <h3 style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;">🎉 All Caught Up!</h3>
-            <p style="font-size: 1.1rem; color: var(--secondary-color); margin-bottom: 1.5rem;">There are no pending problems to verify right now.</p>
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <a href="/report" class="btn btn-primary" style="padding: 0.8rem 1.5rem; font-weight: 600;">📝 Report a New Issue</a>
-                <a href="/" class="btn" style="padding: 0.8rem 1.5rem; font-weight: 600; background: var(--bg-color); border: 2px solid var(--primary-color);">🏠 Back to Home</a>
+            <!-- Empty State -->
+            <div th:if="${problems.empty}" style="text-align: center; padding: 4rem; background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 3rem;">
+                <h3 style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;">🎉 All Caught Up!</h3>
+                <p style="font-size: 1.1rem; color: var(--secondary-color); margin-bottom: 1.5rem;">There are no pending problems to verify right now.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="/report" class="btn btn-primary" style="padding: 0.8rem 1.5rem; font-weight: 600;">📝 Report a New Issue</a>
+                    <a href="/" class="btn" style="padding: 0.8rem 1.5rem; font-weight: 600; background: var(--bg-color); border: 2px solid var(--primary-color);">🏠 Back to Home</a>
+                </div>
+            </div>
+
+            <!-- How Scoring Works -->
+            <div style="background: linear-gradient(135deg, rgba(187, 134, 252, 0.1), rgba(52, 211, 153, 0.1)); padding: 2rem; border-radius: var(--radius); border: 1px solid rgba(74, 144, 226, 0.2); margin-bottom: 2rem;">
+                <h3 style="color: var(--primary-color); margin-bottom: 1rem;">🧮 How Scoring Works</h3>
+                <div style="background: rgba(0,0,0,0.05); padding: 1.5rem; border-radius: 8px; font-family: monospace; font-weight: bold; margin-bottom: 1rem;">
+                    Priority Score = (Your Confirmations − Rejections) + Severity Multiplier
+                </div>
+                <p style="margin-bottom: 0.5rem;"><strong>High Severity:</strong> +10 points | <strong>Medium:</strong> +5 points | <strong>Low:</strong> +0 points</p>
+                <p style="color: var(--secondary-color);">Higher scores = Faster action by authorities! Your vote directly impacts response time.</p>
             </div>
         </div>
-
-        <!-- How Scoring Works -->
-        <div style="background: linear-gradient(135deg, rgba(187, 134, 252, 0.1), rgba(52, 211, 153, 0.1)); padding: 2rem; border-radius: var(--radius); border: 1px solid rgba(74, 144, 226, 0.2); margin-bottom: 2rem;">
-            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">🧮 How Scoring Works</h3>
-            <div style="background: rgba(0,0,0,0.05); padding: 1.5rem; border-radius: 8px; font-family: monospace; font-weight: bold; margin-bottom: 1rem;">
-                Priority Score = (Your Confirmations − Rejections) + Severity Multiplier
-            </div>
-            <p style="margin-bottom: 0.5rem;"><strong>High Severity:</strong> +10 points | <strong>Medium:</strong> +5 points | <strong>Low:</strong> +0 points</p>
-            <p style="color: var(--secondary-color);">Higher scores = Faster action by authorities! Your vote directly impacts response time.</p>
-        </div>
-    </div>
+    </main>
+</div>
 
     <script th:src="@{/js/script.js}"></script>
 </body>
