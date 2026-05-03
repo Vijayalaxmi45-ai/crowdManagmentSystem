@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - CrowdMapper</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .split-layout {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .left-side {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.9), rgba(139, 92, 246, 0.9)), url('https://images.unsplash.com/photo-1517732306149-e8f829eb588a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+        }
+        .left-side h1 { font-size: 3.5rem; margin-bottom: 1rem; }
+        .left-side p { font-size: 1.2rem; opacity: 0.9; max-width: 500px; line-height: 1.6; }
+        
+        .right-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-color);
+            position: relative;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .auth-card h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        .auth-card p { color: var(--secondary-color); margin-bottom: 2rem; }
+        
+        .form-control {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.2rem;
+            border: 2px solid rgba(0,0,0,0.05);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.02);
+            font-size: 1rem;
+            transition: all 0.3s;
+            color: var(--text-color);
+        }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            background: transparent;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+        }
+        .btn-auth {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
+        }
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--secondary-color);
+        }
+        .login-link a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
+        
+        /* Verification Modal styling */
+        #verifyModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center; justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+        .modal-content input {
+            text-align: center;
+            letter-spacing: 5px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 900px) {
+            .left-side { display: none; }
+            .auth-card { box-shadow: none; padding: 2rem; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div class="split-layout">
+        <!-- Left Banner -->
+        <div class="left-side">
+            <h1>Join CrowdMapper</h1>
+            <p>Empower your community with real-time reporting, intelligent tracking, and rapid issue resolution. Together, we build smarter cities.</p>
+        </div>
+
+        <!-- Right Form -->
+        <div class="right-side">
+            <button id="theme-toggle" class="theme-toggle" style="position: absolute; top: 2rem; right: 2rem;">🌙</button>
+            
+            <div class="auth-card">
+                <h2>Create Account</h2>
+                <p>Register as a citizen, staff, or administrator.</p>
+                
+                <form id="registerForm" action="/api/auth/register" method="POST">
+                    <input type="text" id="fullName" name="fullName" class="form-control" placeholder="Full Name" required>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Email Address" required>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                    
+                    <select id="role" name="role" class="form-control" required onchange="handleRoleChange()">
+                        <option value="" disabled selected>Select Your Role</option>
+                        <option value="USER">Citizen / User</option>
+                        <option value="STAFF">City Staff</option>
+                        <option value="ADMIN">Administrator</option>
+                    </select>
+
+                    <button type="button" class="btn-auth" onclick="submitRegistration()">Create Account</button>
+                </form>
+
+                <div class="login-link">
+                    Already have an account? <a href="/login">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Verification Modal -->
+    <div id="verifyModal">
+        <div class="modal-content">
+            <h2 style="color: var(--primary-color); margin-bottom: 1rem;">Admin Verification</h2>
+            <p style="color: var(--secondary-color); margin-bottom: 2rem;">We've sent a secret code to your email. Enter it below to activate your Admin privileges.</p>
+            <input type="text" id="secretCode" class="form-control" placeholder="0 0 0 0 0 0" maxlength="6">
+            <button class="btn-auth" onclick="verifyAdminCode()">Verify Code</button>
+            <p id="verifyError" style="color: var(--danger-color); margin-top: 1rem; display: none;">Invalid code. Please try again.</p>
+        </div>
+    </div>
+
+    <script>
+        // Real logic for Theme Toggle
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', savedTheme);
+        themeToggleBtn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeToggleBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        });
+
+        // Global variable to store simulated code
+        let simulatedAdminCode = "";
+
+        function handleRoleChange() {
+            // Can add visual hints if ADMIN is selected
+        }
+
+        function submitRegistration() {
+            const form = document.getElementById('registerForm');
+            if(!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const role = document.getElementById('role').value;
+            const email = document.getElementById('email').value;
+
+            if (role === 'ADMIN') {
+                // Simulate sending email and getting code
+                simulatedAdminCode = Math.floor(100000 + Math.random() * 900000).toString();
+                console.log("SIMULATED EMAIL SENT TO " + email + ". Secret Code: " + simulatedAdminCode);
+                
+                // Show modal
+                document.getElementById('verifyModal').style.display = 'flex';
+                // Automatically populate console log so user can see it in devtools or we can auto-fill for demo
+                alert("Simulated Email Sent! Check browser console for the Secret Code. (Code: " + simulatedAdminCode + ")");
+            } else {
+                // Submit normally for USER or STAFF
+                completeRegistration(false);
+            }
+        }
+
+        function verifyAdminCode() {
+            const inputCode = document.getElementById('secretCode').value;
+            if (inputCode === simulatedAdminCode) {
+                document.getElementById('verifyError').style.display = 'none';
+                completeRegistration(true);
+            } else {
+                document.getElementById('verifyError').style.display = 'block';
+            }
+        }
+
+        function completeRegistration(isAdmin) {
+            // Normally this would be a fetch POST to /api/auth/register
+            // For demo purposes, we will simulate successful registration and redirect to login
+            alert(isAdmin ? "Admin account successfully verified and created!" : "Account created successfully!");
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

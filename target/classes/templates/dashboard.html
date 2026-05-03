@@ -1,255 +1,234 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Crowd Mapper</title>    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🗺️</text></svg>" type="image/svg+xml">    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Dashboard - Real-Time Smart System</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🗺️</text></svg>" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SockJS and STOMP for Real-Time -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <style>
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .chart-container {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--card-bg); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; position: relative; overflow: hidden; }
+        .stat-number { font-size: 3rem; font-weight: bold; color: var(--primary-color); }
+        .chart-container { background: var(--card-bg); padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 2rem; border: 1px solid rgba(0,0,0,0.05); }
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .chart-container canvas { max-height: 240px !important; }
+        @media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
+        /* Toast Notification */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; }
+        .toast { background: var(--success-color); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 10px; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
-
 <body>
 
-    <nav>
+<div class="layout-wrapper">
+    <!-- Modern Left Side Navigation Bar -->
+    <aside class="sidebar">
         <a href="/" class="logo">CrowdMapper</a>
-        <div class="nav-links">
-            <a href="/" th:text="#{nav.home}">Home</a>
-            <a href="/report" th:text="#{nav.report}">Report Problem</a>
-            <a href="/verify" th:text="#{nav.verify}">Verify</a>
-            <a href="/dashboard" th:text="#{nav.dashboard}">Dashboard</a>
-            <a href="/admin" th:text="#{nav.admin}">Admin</a>
-            <button id="theme-toggle" class="theme-toggle">🌙</button>
-            <a href="/login" style="background: linear-gradient(135deg, var(--primary-color), #8b5cf6); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none;">🔐 Login</a>
+        <div class="sidebar-nav">
+            <a href="/dashboard" class="sidebar-link active"><span>📊</span> Dashboard</a>
+            <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
+            <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
+            <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
+            <a href="/qr-entry" class="sidebar-link"><span>🔲</span> QR Entry</a>
+            <a href="/notifications" class="sidebar-link"><span>🔔</span> Notifications</a>
+            <a href="/admin" class="sidebar-link" th:if="${isAdmin}"><span>🛠️</span> Admin Panel</a>
         </div>
-    </nav>
-
-    <div class="container">
-        <div style="margin-bottom: 3rem;">
-            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--primary-color);">📊 <span th:text="#{dashboard.title}">Analytics Dashboard</span></h1>
-            <p style="font-size: 1rem; color: var(--secondary-color);" th:text="#{dashboard.subtitle}">Real-time insights from community-verified civic data. Monitor issues, track progress, and measure impact.</p>
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <button id="theme-toggle" class="sidebar-link" style="width:100%; border:none; cursor:pointer; background:transparent; font-size:1rem;"><span>🌙</span> Dark Mode</button>
+            <a href="/profile" class="sidebar-link"><span>👤</span> Profile</a>
+            <a href="/logout" class="sidebar-link" style="color: var(--danger-color);"><span>🚪</span> Logout</a>
         </div>
+    </aside>
 
-        <!-- Expanded Summary Metrics -->
-        <div class="stats-grid">
-            <div class="stat-card" style="background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(187, 134, 252, 0.1)); border: 1px solid rgba(74, 144, 226, 0.2);">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📋</div>
-                <div class="stat-number" th:text="${totalProblems}">0</div>
-                <div class="stat-label">Total Reports</div>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(207, 102, 121, 0.1)); border: 1px solid rgba(231, 76, 60, 0.2);">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔥</div>
-                <div class="stat-number" style="color: var(--danger-color);" th:text="${highPriorityCount}">0</div>
-                <div class="stat-label">High Priority</div>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, rgba(241, 196, 15, 0.1), rgba(255, 193, 7, 0.1)); border: 1px solid rgba(241, 196, 15, 0.2);">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⚠️</div>
-                <div class="stat-number" style="color: var(--warning-color);" th:text="${mediumPriorityCount}">0</div>
-                <div class="stat-label">Medium Priority</div>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 211, 153, 0.1)); border: 1px solid rgba(46, 204, 113, 0.2);">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✅</div>
-                <div class="stat-number" style="color: var(--success-color);" th:text="${resolvedCount}">0</div>
-                <div class="stat-label">Resolved</div>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(74, 144, 226, 0.1)); border: 1px solid rgba(52, 152, 219, 0.2);">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">👥</div>
-                <div class="stat-number" style="color: #3498db;" th:text="${totalVerifications}">0</div>
-                <div class="stat-label">Community Votes</div>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(187, 134, 252, 0.1)); border: 1px solid rgba(155, 89, 182, 0.2);">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📈</div>
-                <div class="stat-number" style="color: #9b59b6;" th:text="${totalProblems > 0 ? ((resolvedCount * 100) / totalProblems) : 0}">0%</div>
-                <div class="stat-label">Resolution Rate</div>
-            </div>
-        </div>
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Top Navbar for Mobile/Extra (Hidden on Desktop if desired) -->
+        <nav style="display: none;">
+            <div class="nav-links"></div>
+        </nav>
 
-        <!-- Key Insights -->
-        <div style="background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(46, 204, 113, 0.1)); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border: 1px solid rgba(74, 144, 226, 0.2);">
-            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">💡 Key Insights</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; font-size: 0.95rem;">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
                 <div>
-                    <strong style="color: var(--primary-color);">🎯 Top Issue Type:</strong>
-                    <p>Most reported issues are related to Road Infrastructure & Waste Management</p>
+                    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--primary-color);">Admin Dashboard</h1>
+                    <p style="font-size: 1rem; color: var(--secondary-color);">Real-time monitoring and analytics</p>
                 </div>
                 <div>
-                    <strong style="color: var(--primary-color);">📍 Active Regions:</strong>
-                    <p>Urban areas showing highest participation in verification and reporting</p>
-                </div>
-                <div>
-                    <strong style="color: var(--primary-color);">⚡ Response Time:</strong>
-                    <p>Average time to resolution: 5-7 days (community accelerated through votes)</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Activity & Performance Metrics -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-            <!-- Report Categories Breakdown -->
-            <div style="background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(187, 134, 252, 0.1)); padding: 2rem; border-radius: var(--radius); border: 1px solid rgba(74, 144, 226, 0.2); box-shadow: var(--shadow);">
-                <h3 style="color: var(--primary-color); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <span>🏗️</span> Problem Categories Breakdown
-                </h3>
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
-                        <span style="font-weight: 600;">🚧 Road Infrastructure</span>
-                        <span style="background: var(--primary-color); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">24 issues</span>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
-                        <span style="font-weight: 600;">🗑️ Waste Management</span>
-                        <span style="background: var(--warning-color); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">18 issues</span>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
-                        <span style="font-weight: 600;">💧 Water & Sanitation</span>
-                        <span style="background: var(--danger-color); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">12 issues</span>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
-                        <span style="font-weight: 600;">💡 Street Lighting</span>
-                        <span style="background: var(--success-color); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">9 issues</span>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
-                        <span style="font-weight: 600;">🌳 Parks & Green Space</span>
-                        <span style="background: #1abc9c; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">7 issues</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Community Engagement Stats -->
-            <div style="background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 211, 153, 0.1)); padding: 2rem; border-radius: var(--radius); border: 1px solid rgba(46, 204, 113, 0.2); box-shadow: var(--shadow);">
-                <h3 style="color: var(--success-color); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <span>👥</span> Community Engagement
-                </h3>
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div style="padding: 1rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px; border-left: 4px solid var(--success-color);">
-                        <div style="font-size: 1.8rem; font-weight: bold; color: var(--success-color);">342</div>
-                        <div style="color: var(--secondary-color); font-size: 0.9rem;">Active Citizens Engaged</div>
-                    </div>
-                    <div style="padding: 1rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px; border-left: 4px solid #3498db;">
-                        <div style="font-size: 1.8rem; font-weight: bold; color: #3498db;" th:text="${totalVerifications}">0</div>
-                        <div style="color: var(--secondary-color); font-size: 0.9rem;">Total Community Votes</div>
-                    </div>
-                    <div style="padding: 1rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px; border-left: 4px solid #f39c12;">
-                        <div style="font-size: 1.8rem; font-weight: bold; color: #f39c12;">87%</div>
-                        <div style="color: var(--secondary-color); font-size: 0.9rem;">Verification Accuracy Rate</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Regional Performance -->
-            <div style="background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(187, 134, 252, 0.1)); padding: 2rem; border-radius: var(--radius); border: 1px solid rgba(155, 89, 182, 0.2); box-shadow: var(--shadow);">
-                <h3 style="color: #9b59b6; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <span>📍</span> Top Performing Regions
-                </h3>
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
-                        <span style="font-weight: 600;">🏙️ Downtown District</span>
-                        <span style="background: #9b59b6; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">45 reports</span>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
-                        <span style="font-weight: 600;">🌆 North Zone</span>
-                        <span style="background: #8e44ad; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">38 reports</span>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
-                        <span style="font-weight: 600;">🏞️ Suburban Area</span>
-                        <span style="background: #7d3c98; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">28 reports</span>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; background: rgba(255, 255, 255, 0.5); border-radius: 8px;">
-                        <span style="font-weight: 600;">🌃 South Zone</span>
-                        <span style="background: #6c3483; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">22 reports</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Top Urgent Problems -->
-        <h3 style="margin-bottom: 0.5rem; color: var(--primary-color); font-size: 1.5rem;">🔥 Top 5 Urgent Problems</h3>
-        <p style="margin-bottom: 1.5rem; color: var(--secondary-color);">Highest priority issues requiring immediate intervention based on community verification & impact.</p>
-        <div class="card-grid" style="margin-bottom: 3rem;">
-            <div class="card" style="border: 2px solid rgba(74, 144, 226, 0.2);" th:each="p : ${topProblems}">
-                <div class="problem-header">
-                    <span class="priority-badge"
-                        th:text="${p.priority > 8 ? 'High Priority' : (p.priority > 3 ? 'Medium Priority' : 'Low Priority')}"
-                        th:classappend="${p.priority > 8 ? 'priority-high' : (p.priority > 3 ? 'priority-medium' : 'priority-low')}">
+                    <span id="live-indicator" style="background: rgba(46, 204, 113, 0.2); color: var(--success-color); padding: 5px 15px; border-radius: 20px; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+                        <span style="width: 10px; height: 10px; background: var(--success-color); border-radius: 50%; display: inline-block; animation: pulse 2s infinite;"></span> Live Connected
                     </span>
-                    <span class="status-badge" th:text="${p.status}"
-                        th:classappend="${p.status == 'Open' ? 'status-open' : 'status-resolved'}">Status</span>
                 </div>
-                <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;" th:text="${p.title}">Title</h3>
-                <div class="problem-meta" style="margin-bottom: 1rem;">
-                    <span style="font-weight: 600; color: var(--primary-color);" th:text="${p.type}">Type</span>
-                    <span style="color: var(--secondary-color);">|</span>
-                    <span th:text="${p.city} + ', ' + ${p.area}">Location</span>
+            </div>
+
+            <!-- Real-Time Cards -->
+            <div class="stats-grid">
+                <div class="stat-card" style="border-top: 4px solid var(--primary-color);">
+                    <div class="stat-label">Total Complaints</div>
+                    <div class="stat-number" id="totalComplaints" th:text="${totalProblems}">0</div>
                 </div>
-                <div style="background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(187, 134, 252, 0.1)); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 3px solid var(--primary-color);">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="color: var(--primary-color); font-size: 1.2rem;">Priority Score: </strong>
-                            <span style="font-size: 1.4rem; font-weight: bold; color: var(--primary-color);" th:text="${p.priority}">0</span>
-                        </div>
-                        <div style="text-align: right;">
-                            <small style="color: var(--secondary-color);">Status:</small><br>
-                            <span style="font-weight: bold; color: var(--success-color);" th:text="${p.status}">Open</span>
-                        </div>
+                <div class="stat-card" style="border-top: 4px solid var(--danger-color);">
+                    <div class="stat-label">Active Issues</div>
+                    <div class="stat-number" style="color: var(--danger-color);" id="activeIssues" th:text="${highPriorityCount}">0</div>
+                </div>
+                <div class="stat-card" style="border-top: 4px solid var(--success-color);">
+                    <div class="stat-label">Resolved Issues</div>
+                    <div class="stat-number" style="color: var(--success-color);" id="resolvedIssues" th:text="${resolvedCount}">0</div>
+                </div>
+                <div class="stat-card" style="border-top: 4px solid var(--warning-color);">
+                    <div class="stat-label">Pending Approval</div>
+                    <div class="stat-number" style="color: var(--warning-color);" id="pendingApproval">5</div>
+                </div>
+                <div class="stat-card" style="border-top: 4px solid #9b59b6;">
+                    <div class="stat-label">Avg Crowd Density</div>
+                    <div class="stat-number" style="color: #9b59b6;">78%</div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <h3>Complaint Trends (Weekly)</h3>
+                    <canvas id="lineChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Issues by Category</h3>
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Complaints Table with Filters -->
+            <div class="chart-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3>Recent Complaints</h3>
+                    <div style="display: flex; gap: 1rem;">
+                        <select class="form-control" style="width: auto; padding: 0.5rem;"><option>All Cities</option><option>Pune</option><option>Mumbai</option></select>
+                        <select class="form-control" style="width: auto; padding: 0.5rem;"><option>All Categories</option><option>Traffic</option><option>Safety</option></select>
+                        <input type="date" class="form-control" style="width: auto; padding: 0.5rem;">
                     </div>
                 </div>
-                <div style="display: flex; gap: 1rem; justify-content: space-between; font-size: 0.9rem; background: var(--bg-color); padding: 0.8rem; border-radius: 6px;">
-                    <span style="color: var(--success-color); font-weight: 600;">👍 <span th:text="${p.confirms}">0</span></span>
-                    <span style="color: var(--danger-color); font-weight: 600;">👎 <span th:text="${p.rejects}">0</span></span>
-                    <a href="/verify" style="color: var(--primary-color); text-decoration: none; font-weight: 600; cursor: pointer;">Vote →</a>
-                </div>
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--secondary-color);">
+                            <th style="padding: 1rem;">ID</th>
+                            <th style="padding: 1rem;">Title</th>
+                            <th style="padding: 1rem;">Category</th>
+                            <th style="padding: 1rem;">City</th>
+                            <th style="padding: 1rem;">Status</th>
+                            <th style="padding: 1rem;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="complaintsTableBody">
+                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.1);" th:each="p : ${topProblems}">
+                            <td style="padding: 1rem;">#<span th:text="${p.id}"></span></td>
+                            <td style="padding: 1rem; font-weight: bold;" th:text="${p.title}">Pothole on Main St</td>
+                            <td style="padding: 1rem;" th:text="${p.type}">Infrastructure</td>
+                            <td style="padding: 1rem;" th:text="${p.city}">Pune</td>
+                            <td style="padding: 1rem;">
+                                <span class="status-badge status-open" th:text="${p.status}">PENDING</span>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <button class="btn btn-primary" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">Review</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+
         </div>
+    </main>
+</div>
 
-        <!-- Recommendations & Next Steps -->
-        <div style="background: linear-gradient(135deg, rgba(187, 134, 252, 0.1), rgba(52, 211, 153, 0.1)); padding: 2rem; border-radius: var(--radius); border-left: 4px solid var(--primary-color); box-shadow: var(--shadow);">
-            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">📋 Recommendations for Authorities</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-                <div>
-                    <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">🎯 Immediate Action (High Priority)</h4>
-                    <p style="font-size: 0.9rem; color: var(--secondary-color);">Address the <strong th:text="${highPriorityCount}">0</strong> high-priority verified issues to boost citizen trust and show responsiveness.</p>
-                </div>
-                <div>
-                    <h4 style="color: var(--warning-color); margin-bottom: 0.5rem;">⚡ Medium-Term Planning</h4>
-                    <p style="font-size: 0.9rem; color: var(--secondary-color);">Allocate resources for <strong th:text="${mediumPriorityCount}">0</strong> medium-priority issues in the next 2-4 weeks.</p>
-                </div>
-                <div>
-                    <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">📊 System Performance</h4>
-                    <p style="font-size: 0.9rem; color: var(--secondary-color);">Monitor engagement: <strong th:text="${totalVerifications}">0</strong> community verifications show active participation.</p>
-                </div>
-            </div>
-        </div>
+<!-- Toast Notifications Container -->
+<div id="toast-container"></div>
 
-    </div>
+<script>
+    // Initialize Charts
+    document.addEventListener("DOMContentLoaded", function() {
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'New Complaints',
+                    data: [12, 19, 3, 5, 2, 3, 15],
+                    borderColor: '#4a90e2',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(74, 144, 226, 0.1)'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: true, aspectRatio: 2.5,
+                plugins: { legend: { position: 'top' } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 5 } } }
+            }
+        });
 
-    <script th:src="@{/js/script.js}"></script>
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Crowd', 'Safety', 'Traffic', 'Infrastructure'],
+                datasets: [{
+                    data: [30, 20, 25, 25],
+                    backgroundColor: ['#e74c3c', '#f1c40f', '#3498db', '#2ecc71'],
+                    borderWidth: 2
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: true, aspectRatio: 2,
+                plugins: { legend: { position: 'right' } }
+            }
+        });
+    });
+
+    // WebSocket Real-Time Integration
+    function connectWebSocket() {
+        const socket = new SockJS('/ws');
+        const stompClient = Stomp.over(socket);
+        stompClient.debug = null; // Disable debug logging
+        
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            // Subscribe to admin notifications
+            stompClient.subscribe('/topic/admin/notifications', function (message) {
+                showToast("New Alert: " + message.body);
+                // Update stats dynamically
+                const activeEl = document.getElementById('activeIssues');
+                activeEl.innerText = parseInt(activeEl.innerText) + 1;
+            });
+        }, function(error) {
+            document.getElementById('live-indicator').innerHTML = '<span style="width: 10px; height: 10px; background: var(--danger-color); border-radius: 50%; display: inline-block;"></span> Disconnected';
+        });
+    }
+
+    function showToast(message) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = '<span>🔔</span> ' + message;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+
+    // Connect WebSockets on load
+    // connectWebSocket(); // Uncomment when backend /ws endpoint is fully compiled and active
+</script>
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.5); opacity: 0.5; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
+
+<script th:src="@{/js/script.js}"></script>
 </body>
-
 </html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Entry - Crowd Mapper</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        #qrcode {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+        }
+        .scan-animation {
+            width: 100%;
+            height: 4px;
+            background: var(--primary-color);
+            position: relative;
+            animation: scan 2s infinite;
+            display: none;
+        }
+        @keyframes scan {
+            0% { top: -200px; }
+            50% { top: 0px; }
+            100% { top: -200px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout-wrapper">
+    <!-- Modern Left Side Navigation Bar -->
+    <aside class="sidebar">
+        <a href="/" class="logo">CrowdMapper</a>
+        <div class="sidebar-nav">
+            <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
+            <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
+            <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
+            <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
+            <a href="/qr-entry" class="sidebar-link active"><span>🔲</span> QR Entry</a>
+            <a href="/notifications" class="sidebar-link"><span>🔔</span> Notifications</a>
+        </div>
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <button id="theme-toggle" class="sidebar-link" style="width:100%; border:none; cursor:pointer; background:transparent; font-size:1rem;"><span>🌙</span> Dark Mode</button>
+            <a href="/profile" class="sidebar-link"><span>👤</span> Profile</a>
+            <a href="/login" class="sidebar-link" style="color: var(--danger-color);"><span>🚪</span> Logout</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="hero" style="padding: 2rem; background: linear-gradient(135deg, #10b981, #059669); margin-bottom: 2rem;">
+                <h1>Touchless QR Entry</h1>
+                <p>Generate secure entry passes to manage crowd capacity efficiently.</p>
+            </div>
+
+            <div class="qr-container">
+                <h2>Generate Entry Pass</h2>
+                <p style="color: var(--secondary-color); margin-bottom: 1.5rem;">Fill details to generate your unique QR pass.</p>
+                
+                <div class="form-group" style="width: 100%;">
+                    <input type="text" id="visitorName" class="form-control" placeholder="Enter Full Name" required>
+                </div>
+                <div class="form-group" style="width: 100%;">
+                    <select id="locationSelect" class="form-control">
+                        <option value="City Center">City Center</option>
+                        <option value="Tech Park">Tech Park</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-primary" onclick="generateQR()" style="width: 100%;">Generate QR Code</button>
+
+                <div id="qrcode"></div>
+                <div class="scan-animation" id="scanner"></div>
+                
+                <button class="btn btn-success" id="scanBtn" onclick="simulateScan()" style="display: none; width: 100%; margin-top: 1rem;">Simulate Entry Scan</button>
+                <p id="scanResult" style="margin-top: 1rem; font-weight: bold;"></p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    let qrCodeObj = null;
+
+    function generateQR() {
+        const name = document.getElementById('visitorName').value;
+        const loc = document.getElementById('locationSelect').value;
+        
+        if(!name) {
+            alert("Please enter your name");
+            return;
+        }
+
+        const qrData = JSON.stringify({
+            id: 'USER_' + Math.floor(Math.random() * 10000),
+            name: name,
+            location: loc,
+            timestamp: new Date().toISOString()
+        });
+
+        document.getElementById('qrcode').innerHTML = "";
+        qrCodeObj = new QRCode(document.getElementById("qrcode"), {
+            text: qrData,
+            width: 200,
+            height: 200,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+
+        document.getElementById('scanBtn').style.display = 'block';
+        document.getElementById('scanResult').innerText = "";
+    }
+
+    function simulateScan() {
+        document.getElementById('scanner').style.display = 'block';
+        document.getElementById('scanResult').innerText = "Scanning...";
+        document.getElementById('scanResult').style.color = "var(--text-color)";
+        
+        setTimeout(() => {
+            document.getElementById('scanner').style.display = 'none';
+            document.getElementById('scanResult').innerText = "✅ Entry Approved! Capacity updated.";
+            document.getElementById('scanResult').style.color = "var(--success-color)";
+            
+            // Trigger websocket/backend update here if connected
+        }, 2000);
+    }
+</script>
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>

@@ -15,10 +15,10 @@ public class ProblemController {
 
     @Autowired
     private ProblemService problemService;
-    
+
     @Autowired
     private LocaleResolver localeResolver;
-    
+
     private void addLocaleToModel(Model model, HttpServletRequest request) {
         Locale locale = localeResolver.resolveLocale(request);
         String lang = locale.getLanguage();
@@ -29,9 +29,17 @@ public class ProblemController {
         } else {
             model.addAttribute("currentLang", "en");
         }
+        // Pass logged-in user info to ALL templates
+        var principal = request.getUserPrincipal();
+        if (principal != null) {
+            model.addAttribute("loggedInUser", principal.getName());
+            model.addAttribute("isAdmin", request.isUserInRole("ADMIN"));
+            model.addAttribute("isStaff", request.isUserInRole("STAFF"));
+        }
+        model.addAttribute("isLoggedIn", principal != null);
     }
 
-    // 1. Home Page
+    // 1. Home — PUBLIC
     @GetMapping("/")
     public String home(Model model, HttpServletRequest request) {
         addLocaleToModel(model, request);
@@ -43,7 +51,7 @@ public class ProblemController {
         return "index";
     }
 
-    // 2. Report Problem Page
+    // 2. Report Problem — requires login
     @GetMapping("/report")
     public String reportPage(Model model, HttpServletRequest request) {
         addLocaleToModel(model, request);
@@ -57,7 +65,7 @@ public class ProblemController {
         return "redirect:/";
     }
 
-    // 3. Verify Problem Page
+    // 3. Verify
     @GetMapping("/verify")
     public String verifyPage(Model model, HttpServletRequest request) {
         addLocaleToModel(model, request);
@@ -72,7 +80,7 @@ public class ProblemController {
         return "redirect:/verify";
     }
 
-    // 4. Dashboard Page
+    // 4. Dashboard — requires login
     @GetMapping("/dashboard")
     public String dashboard(Model model, HttpServletRequest request) {
         addLocaleToModel(model, request);
@@ -86,7 +94,7 @@ public class ProblemController {
         return "dashboard";
     }
 
-    // 5. Admin Page
+    // 5. Admin — requires ADMIN role
     @GetMapping("/admin")
     public String adminPage(Model model, HttpServletRequest request) {
         addLocaleToModel(model, request);
@@ -97,6 +105,7 @@ public class ProblemController {
         return "admin";
     }
 
+    // 6. Login — PUBLIC
     @GetMapping("/login")
     public String loginPage(Model model, HttpServletRequest request) {
         addLocaleToModel(model, request);

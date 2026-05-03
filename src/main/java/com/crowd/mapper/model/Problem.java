@@ -5,6 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -38,4 +42,23 @@ public class Problem {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    // --- New Features for Real-Time Smart System Workflow --- //
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User reporter;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_staff_id")
+    private User assignedStaff;
+
+    // Workflow: PENDING -> APPROVED -> ASSIGNED -> IN_PROGRESS -> RESOLVED
+    private String workflowStatus = "PENDING";
+    
+    @Column(length = 1000)
+    private String remarks;
+
+    private String imagePath; // Path to user uploaded proof
+    private String resolutionProofImage; // Path to staff uploaded resolution proof
 }

@@ -11,18 +11,26 @@
 
 <body>
 
-    <nav>
+<div class="layout-wrapper">
+    <!-- Modern Left Side Navigation Bar -->
+    <aside class="sidebar">
         <a href="/" class="logo">CrowdMapper</a>
-        <div class="nav-links">
-            <a href="/" th:text="#{nav.home}">Home</a>
-            <a href="/report" th:text="#{nav.report}">Report Problem</a>
-            <a href="/verify" th:text="#{nav.verify}">Verify</a>
-            <a href="/dashboard" th:text="#{nav.dashboard}">Dashboard</a>
-            <a href="/admin" th:text="#{nav.admin}">Admin</a>
-            <button id="theme-toggle" class="theme-toggle">🌙</button>
-            <a href="/login" style="background: linear-gradient(135deg, var(--primary-color), #8b5cf6); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none;">🔐 Login</a>
+        <div class="sidebar-nav">
+            <a href="/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
+            <a href="/live-tracking" class="sidebar-link"><span>🗺️</span> Live Map</a>
+            <a href="/report" class="sidebar-link"><span>📝</span> Report Issue</a>
+            <a href="/verify" class="sidebar-link"><span>✓</span> Verify</a>
+            <a href="/my-complaints" class="sidebar-link"><span>📋</span> My Complaints</a>
+            <a href="/qr-entry" class="sidebar-link"><span>🔲</span> QR Entry</a>
+            <a href="/admin" class="sidebar-link"><span>🛠️</span> Admin</a>
         </div>
-    </nav>
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <button id="theme-toggle" class="sidebar-link" style="width:100%; border:none; cursor:pointer; background:transparent; font-size:1rem;"><span>🌙</span> Dark Mode</button>
+            <a href="/login" class="sidebar-link" style="color: var(--danger-color);"><span>🚪</span> Login</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
 
     <div class="container">
         <!-- Hero Section -->
@@ -472,6 +480,9 @@
             <p style="font-size: 0.85rem; opacity: 0.8;">📧 admin@crowdmapper.local | 🌍 Empowering Citizens through Civic Technology</p>
         </div>
     </footer>
+
+    </main>
+</div>
 
     <script th:src="@{/js/script.js}"></script>
 </body>
