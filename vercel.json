@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "pom.xml",
+      "use": "@vercel/java"
+    }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "src/main/java/com/crowd/mapper/CrowdMapperApplication.java" }
+  ]
+}
